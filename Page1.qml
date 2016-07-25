@@ -1,12 +1,16 @@
 import QtQuick 2.7
 
 Page1Form {
+    property bool songLoaded : false;
     button1.onClicked: {
         console.log("Button 1 clicked.");
-        mdxPlayer.loadSong(true,
-                           "",
-                           "",
-                           2, true);
+        if(!songLoaded){
+            mdxPlayer.loadSong(true,
+                               "",
+                               "",
+                               2, true);
+            songLoaded = true;
+        }
         mdxPlayer.startPlay();
         button1.text = mdxPlayer.title;
     }

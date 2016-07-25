@@ -155,12 +155,11 @@ bool QMDXPlayer::startPlay()
     if(audioOutput_){
         if(audioOutput_->state() == QAudio::SuspendedState){
             audioOutput_->resume();
-            connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
         } else {
             wavIndex_ = 0;
             audioBuffer_ = audioOutput_->start();
-            writeAudioBuffer();
         }
+        writeAudioBuffer();
     } else {
         return false;
     }
