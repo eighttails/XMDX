@@ -8,6 +8,7 @@ Page1Form {
                            "",
                            2, true);
         mdxPlayer.startPlay();
+        button1.text = mdxPlayer.title;
     }
     button2.onClicked: {
         console.log("Button 2 clicked.");

@@ -1,6 +1,7 @@
 #include <QDebug>
 #include <QBuffer>
 #include <QProcessEnvironment>
+#include <QTextCodec>
 
 #include "qmdxplayer.h"
 #include "mdx2wav/gamdx/mxdrvg/mxdrvg.h"
@@ -43,7 +44,7 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     audioOutput_ = new QAudioOutput(info, format, this);
     connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE * 10);
-    audioOutput_->setNotifyInterval(1000);
+    audioOutput_->setNotifyInterval(100);
 }
 
 bool QMDXPlayer::loadSong(bool renderWav,
@@ -91,6 +92,8 @@ bool QMDXPlayer::loadSong(bool renderWav,
     if (!LoadMDX(mdx_name, title, sizeof(title))) {
         return false;
     }
+    QTextCodec *sjis = QTextCodec::codecForName("Shift-JIS");
+    title_ = sjis->toUnicode(title);
 
     float song_duration = MXDRVG_MeasurePlayTime(loop, fadeout) / 1000.0f;
     // Warning: MXDRVG_MeasurePlayTime calls MXDRVG_End internaly,
@@ -152,6 +155,7 @@ bool QMDXPlayer::startPlay()
     if(audioOutput_){
         if(audioOutput_->state() == QAudio::SuspendedState){
             audioOutput_->resume();
+            connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
         } else {
             wavIndex_ = 0;
             audioBuffer_ = audioOutput_->start();
