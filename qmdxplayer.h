@@ -35,11 +35,20 @@ public:
     QString title();
     float duration();
 
+private slots:
+    void writeAudioBuffer();
 private:
+    // 曲のタイトル
     QString title_;
+
+    // 曲の長さ(秒)
     float duration_;
     float maxSongDuration_;
+
+    // レンダリングしたWAVバッファ
     QByteArray wavBuffer_;
+    // 現在再生中のバッファインデックス
+    size_t wavIndex_;
 
     QPointer<QIODevice> audioBuffer_;
     QPointer<QAudioOutput> audioOutput_;

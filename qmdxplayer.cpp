@@ -12,13 +12,16 @@ extern void strcpy_cnv(char *dst, const char *src, int mode);
 extern bool read_file(const char *name, int *fsize, u8 **fdata, int offset);
 extern bool LoadMDX(const char *mdx_name, char *title, int title_len);
 
+constexpr size_t PLAY_SAMPLE_RATE = 44100;
+
 QMutex QMDXPlayer::mutex_;
 
 QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
     , audioOutput_(nullptr)
+    , wavIndex_(0)
     , duration_(0.0)
-    , maxSongDuration_(1500)
+    , maxSongDuration_(500)
 {
     //実行時に出る警告の抑止
     qRegisterMetaType<QAudio::State>();
@@ -26,7 +29,7 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     QAudioFormat format;
     format.setCodec("audio/pcm");
     format.setChannelCount(2);
-    format.setSampleRate(44100);
+    format.setSampleRate(PLAY_SAMPLE_RATE);
     format.setSampleSize(16);
     format.setByteOrder(QAudioFormat::LittleEndian);
     format.setSampleType(QAudioFormat::SignedInt);
@@ -38,7 +41,9 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     }
 
     audioOutput_ = new QAudioOutput(info, format, this);
-    audioOutput_->setBufferSize(maxSongDuration_ * 44100 * 4);
+    connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
+    audioOutput_->setBufferSize(PLAY_SAMPLE_RATE * 10);
+    audioOutput_->setNotifyInterval(1000);
 }
 
 bool QMDXPlayer::loadSong(bool renderWav,
@@ -51,7 +56,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
 
     int MDX_BUF_SIZE = 256 * 1024;
     int PDX_BUF_SIZE = 1024 * 1024;
-    int SAMPLE_RATE = 44100;
+    int SAMPLE_RATE = PLAY_SAMPLE_RATE;
     int filter_mode = 0;
     bool verbose = false;
 
@@ -104,6 +109,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
 
     short *audio_buf = new short [AUDIO_BUF_SAMPLES * 2];
 
+    wavIndex_ = 0;
     wavBuffer_.clear();
     wavBuffer_.reserve(SAMPLE_RATE * song_duration * 4);
     for (int i = 0; song_duration == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < song_duration; i++) {
@@ -123,7 +129,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
         }
 
         for (int j = 0; j < len * 2; j++){
-            audio_buf[j] *= fadevol;
+            //audio_buf[j] *= fadevol;
         }
 
         char* b = reinterpret_cast<char*>(audio_buf);
@@ -147,8 +153,9 @@ bool QMDXPlayer::startPlay()
         if(audioOutput_->state() == QAudio::SuspendedState){
             audioOutput_->resume();
         } else {
+            wavIndex_ = 0;
             audioBuffer_ = audioOutput_->start();
-            audioBuffer_->write(wavBuffer_);
+            writeAudioBuffer();
         }
     } else {
         return false;
@@ -173,4 +180,10 @@ QString QMDXPlayer::title()
 float QMDXPlayer::duration()
 {
     return duration_;
+}
+
+void QMDXPlayer::writeAudioBuffer()
+{
+    qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
+    wavIndex_ += wrote;
 }
