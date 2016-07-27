@@ -505,6 +505,15 @@ static int LoopLimit;
 static int FadeoutStart;
 static int ReqFadeout;
 
+/*読み込んだ曲にフェードアウトが発生するかどうかを返す。*/
+/*MXDRVG_MeasurePlayTimeの実行後に呼ぶこと。*/
+MXDRVG_EXPORT
+int MXDRVG_GetFadeoutStart(
+    void
+) {
+    return FadeoutStart;
+}
+
 static void MXDRVG_CALLBACK MXDRVG_MeasurePlayTime_OPMINT(
 	void
 ) {

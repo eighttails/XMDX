@@ -8,7 +8,7 @@ Page1Form {
             mdxPlayer.loadSong(true,
                                "",
                                "",
-                               2, true);
+                               1, true);
             songLoaded = true;
         }
         mdxPlayer.startPlay();

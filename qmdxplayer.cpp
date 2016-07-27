@@ -13,6 +13,8 @@ extern void strcpy_cnv(char *dst, const char *src, int mode);
 extern bool read_file(const char *name, int *fsize, u8 **fdata, int offset);
 extern bool LoadMDX(const char *mdx_name, char *title, int title_len);
 
+extern MXDRVG_EXPORT int MXDRVG_GetFadeoutStart(void);
+
 constexpr size_t PLAY_SAMPLE_RATE = 44100;
 
 QMutex QMDXPlayer::mutex_;
@@ -96,6 +98,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
     title_ = sjis->toUnicode(title);
 
     float song_duration = MXDRVG_MeasurePlayTime(loop, fadeout) / 1000.0f;
+    int doFadeout = MXDRVG_GetFadeoutStart();
     // Warning: MXDRVG_MeasurePlayTime calls MXDRVG_End internaly,
     //          thus we need to call MXDRVG_PlayAt due to reset playing status.
     MXDRVG_PlayAt(0, loop, fadeout);
@@ -122,8 +125,8 @@ bool QMDXPlayer::loadSong(bool renderWav,
 
         float current = 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE;
         float fadevol = 1.0;
-        if( song_duration - current < 10.0 ){
-            fadevol = (song_duration - current) / 10;
+        if( doFadeout && song_duration - current < 10.0 ){
+            fadevol = (song_duration - current) / 10.0;
         }
 
         int len = MXDRVG_GetPCM(audio_buf, AUDIO_BUF_SAMPLES);
@@ -132,13 +135,10 @@ bool QMDXPlayer::loadSong(bool renderWav,
         }
 
         for (int j = 0; j < len * 2; j++){
-            //audio_buf[j] *= fadevol;
+            audio_buf[j] *= fadevol;
         }
 
-        char* b = reinterpret_cast<char*>(audio_buf);
-        for(size_t i = 0; i < len * 4; i++){
-            wavBuffer_.push_back(b[i]);
-        }
+        wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * 4);
     }
     MXDRVG_End();
 
