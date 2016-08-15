@@ -2,6 +2,7 @@
 #include <QBuffer>
 #include <QProcessEnvironment>
 #include <QTextCodec>
+#include <QFileInfo>
 
 #include "qmdxplayer.h"
 #include "mdx2wav/gamdx/mxdrvg/mxdrvg.h"
@@ -71,12 +72,14 @@ bool QMDXPlayer::loadSong(bool renderWav,
     int AUDIO_BUF_SAMPLES = SAMPLE_RATE / 100; // 10ms
 
     // ファイル名がからの場合は環境変数からファイル名を取得(デバッグ用)
-    const char *mdx_name = fileName == ""
-            ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME").toLocal8Bit()
-            : fileName.toLocal8Bit();
+    const QString openFileName = fileName == ""
+            ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME")
+            : fileName;
+    const char *mdx_name = openFileName.toLocal8Bit();
     if (mdx_name == 0 || *mdx_name == 0) {
         return false;
     }
+    fileName_ = QFileInfo(openFileName).fileName();
 
     if (0 == strcmp(ym2151_type, "fmgen")) {
     } else if (0 == strcmp(ym2151_type, "mame")) {
@@ -147,6 +150,9 @@ bool QMDXPlayer::loadSong(bool renderWav,
     if (verbose) {
         fprintf(stderr, "completed.\n");
     }
+    emit fileNameChanged();
+    emit titleChanged();
+
     return true;
 }
 
@@ -178,6 +184,11 @@ bool QMDXPlayer::stopPlay()
 QString QMDXPlayer::title()
 {
     return title_;
+}
+
+QString QMDXPlayer::fileName()
+{
+    return fileName_;
 }
 
 float QMDXPlayer::duration()

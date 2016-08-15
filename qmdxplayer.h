@@ -10,6 +10,7 @@ class QMDXPlayer : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
+    Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
     Q_PROPERTY(float duration READ duration NOTIFY playStarted)
 
 public:
@@ -20,6 +21,7 @@ signals:
     void playFinished();
     void songLoaded();
     void titleChanged();
+    void fileNameChanged();
     void durationChanged();
 
 public slots:
@@ -33,6 +35,7 @@ public slots:
 
 public:
     QString title();
+    QString fileName();
     float duration();
 
 private slots:
@@ -40,6 +43,9 @@ private slots:
 private:
     // 曲のタイトル
     QString title_;
+
+    // 曲のファイル名(表示用)
+    QString fileName_;
 
     // 曲の長さ(秒)
     float duration_;

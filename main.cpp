@@ -11,12 +11,12 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Material");
 
     QQmlApplicationEngine engine;
-    engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 
     QMDXPlayer mdxPlayer; // 音楽再生用
     QMDXPlayer mdxInfo; // 曲情報取得用
     engine.rootContext()->setContextProperty(QStringLiteral("mdxPlayer"), &mdxPlayer);
     engine.rootContext()->setContextProperty(QStringLiteral("mdxInfo"), &mdxInfo);
 
+    engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
     return app.exec();
 }
