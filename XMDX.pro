@@ -27,7 +27,21 @@ DISTFILES += \
     mdx2wav/gamdx/downsample/lowpass_44.dat \
     mdx2wav/gamdx/downsample/lowpass_48.dat \
     mdx2wav/gamdx/fmgen/readme.txt \
-    mdx2wav/LICENSE
+    mdx2wav/LICENSE \
+    icon/loop.svg \
+    icon/media-pause.svg \
+    icon/media-play.svg \
+    icon/media-skip-backward.svg \
+    icon/media-skip-forward.svg \
+    icon/media-step-backward.svg \
+    icon/media-step-forward.svg \
+    icon/media-stop.svg \
+    icon/menu.svg \
+    icon/random.svg \
+    icon/volume-high.svg \
+    icon/volume-low.svg \
+    icon/x.svg \
+    icon/ICON-LICENSE
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \

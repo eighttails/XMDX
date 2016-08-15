@@ -1,7 +1,20 @@
 <RCC>
     <qresource prefix="/">
-        <file>main.qml</file>
-        <file>Page1.qml</file>
-        <file>Page1Form.ui.qml</file>
+        <file>qml/main.qml</file>
+        <file>qml/Player.qml</file>
+        <file>qml/PlayerForm.ui.qml</file>
+        <file>icon/loop.svg</file>
+        <file>icon/media-pause.svg</file>
+        <file>icon/media-play.svg</file>
+        <file>icon/media-skip-backward.svg</file>
+        <file>icon/media-skip-forward.svg</file>
+        <file>icon/media-step-backward.svg</file>
+        <file>icon/media-step-forward.svg</file>
+        <file>icon/media-stop.svg</file>
+        <file>icon/menu.svg</file>
+        <file>icon/random.svg</file>
+        <file>icon/volume-high.svg</file>
+        <file>icon/volume-low.svg</file>
+        <file>icon/x.svg</file>
     </qresource>
 </RCC>
