@@ -1,4 +1,4 @@
-import QtQuick 2.4
+import QtQuick 2.7
 import QtQuick.Controls 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
@@ -19,7 +19,6 @@ Item {
     ColumnLayout {
         id: columnLayout1
         anchors.fill: parent
-
 
         Rectangle {
             id: displayPanel
@@ -43,14 +42,11 @@ Item {
                 Text {
                     id: displayTitle
                     color: "skyblue"
-                    text: qsTr("曲名")
                     clip: true
                     Layout.fillWidth: true
-                    horizontalAlignment: Text.AlignHCenter
                     Layout.columnSpan: 2
                     font.pixelSize: 32
                     style: Text.Raised
-                    font.bold: false
                     textFormat: Text.PlainText
                 }
 
