@@ -11,14 +11,14 @@ class QMDXPlayer : public QObject
     Q_OBJECT
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
-    Q_PROPERTY(float duration READ duration NOTIFY playStarted)
+    Q_PROPERTY(float duration READ duration NOTIFY songLoaded)
+    Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
 
 public:
     explicit QMDXPlayer(QObject *parent = 0);
 
 signals:
-    void playStarted();
-    void playFinished();
+    void stateChanged();
     void songLoaded();
     void titleChanged();
     void fileNameChanged();
@@ -37,6 +37,7 @@ public:
     QString title();
     QString fileName();
     float duration();
+    bool isPlaying();
 
 private slots:
     void writeAudioBuffer();

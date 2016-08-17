@@ -22,10 +22,9 @@ QMutex QMDXPlayer::mutex_;
 
 QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
-    , audioOutput_(nullptr)
-    , wavIndex_(0)
     , duration_(0.0)
     , maxSongDuration_(500)
+    , wavIndex_(0)
 {
     //実行時に出る警告の抑止
     qRegisterMetaType<QAudio::State>();
@@ -46,8 +45,13 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 
     audioOutput_ = new QAudioOutput(info, format, this);
     connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
+    connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::stateChanged);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE * 10);
     audioOutput_->setNotifyInterval(100);
+
+    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::titleChanged);
+    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::fileNameChanged);
+    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::durationChanged);
 }
 
 bool QMDXPlayer::loadSong(bool renderWav,
@@ -113,6 +117,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
     if (max_song_duration < song_duration) {
         song_duration = max_song_duration;
     }
+    duration_ = song_duration;
 
     if (!renderWav) return true;
 
@@ -150,9 +155,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
     if (verbose) {
         fprintf(stderr, "completed.\n");
     }
-    emit fileNameChanged();
-    emit titleChanged();
-
+    emit songLoaded();
     return true;
 }
 
@@ -194,6 +197,11 @@ QString QMDXPlayer::fileName()
 float QMDXPlayer::duration()
 {
     return duration_;
+}
+
+bool QMDXPlayer::isPlaying()
+{
+    return audioOutput_->state() == QAudio::ActiveState;
 }
 
 void QMDXPlayer::writeAudioBuffer()
