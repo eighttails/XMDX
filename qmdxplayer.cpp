@@ -72,10 +72,10 @@ bool QMDXPlayer::loadSong(bool renderWav,
     int AUDIO_BUF_SAMPLES = SAMPLE_RATE / 100; // 10ms
 
     // ファイル名がからの場合は環境変数からファイル名を取得(デバッグ用)
-    const QString openFileName = fileName == ""
-            ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME")
-            : fileName;
-    const char *mdx_name = openFileName.toLocal8Bit();
+    const QByteArray openFileName = fileName.isEmpty()
+            ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME").toLocal8Bit()
+            : fileName.toLocal8Bit();
+    const char *mdx_name = openFileName.data();
     if (mdx_name == 0 || *mdx_name == 0) {
         return false;
     }
