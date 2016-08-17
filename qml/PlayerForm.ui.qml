@@ -42,6 +42,7 @@ Item {
                 Text {
                     id: displayTitle
                     color: "skyblue"
+                    text: qsTr("曲名")
                     clip: true
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
@@ -78,6 +79,7 @@ Item {
                 id: rectangle2
                 color: "#00000000"
                 radius: 0
+                z: 3
                 border.width: 3
                 border.color: "skyblue"
                 anchors.rightMargin: 5
@@ -88,6 +90,20 @@ Item {
                 layer.enabled: true
             }
 
+            Rectangle {
+                id: rectangle3
+                color: "#00000000"
+                radius: 0
+                anchors.rightMargin: 5
+                anchors.leftMargin: 5
+                anchors.bottomMargin: 4
+                anchors.topMargin: 6
+                anchors.fill: parent
+                z: 2
+                border.width: 3
+                layer.enabled: true
+                border.color: "#000000"
+            }
 
 
         }
@@ -144,12 +160,7 @@ Item {
         }
 
 
-
-
-
-
     }
-
 
 
 }
