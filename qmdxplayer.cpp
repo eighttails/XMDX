@@ -45,6 +45,7 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 
     audioOutput_ = new QAudioOutput(info, format, this);
     connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
+    connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::currentPositionChanged);
     connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::stateChanged);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE * 10);
     audioOutput_->setNotifyInterval(100);
@@ -197,6 +198,27 @@ QString QMDXPlayer::fileName()
 float QMDXPlayer::duration()
 {
     return duration_;
+}
+
+QString QMDXPlayer::durationString()
+{
+    int d = static_cast<int>(duration());
+    return QString("%1:%2")
+            .arg(d / 60, 2, 10, QLatin1Char('0'))
+            .arg(d % 60, 2, 10, QLatin1Char('0'));
+}
+
+float QMDXPlayer::currentPosition()
+{
+    return float(audioOutput_->processedUSecs()) / 1000000;
+}
+
+QString QMDXPlayer::currentPositionString()
+{
+    int p = static_cast<int>(currentPosition());
+    return QString("%1:%2")
+            .arg(p / 60, 2, 10, QLatin1Char('0'))
+            .arg(p % 60, 2, 10, QLatin1Char('0'));
 }
 
 bool QMDXPlayer::isPlaying()

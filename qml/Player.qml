@@ -26,6 +26,10 @@ PlayerForm {
     }
 
     displayFileName.text: mdxPlayer.fileName;
+    displayDuration.text: "%1/%2"
+    .arg(mdxPlayer.currentPositionString)
+    .arg(mdxPlayer.durationString)
+
     buttonPlay {
         iconSource: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
         onClicked:{
@@ -36,11 +40,14 @@ PlayerForm {
             }
         }
     }
-    buttonLoop  {
+    buttonLoop {
         onClicked:{
         }
     }
 
+    sliderPlayPosition {
+        value: mdxPlayer.duration == 0 ? 0 : mdxPlayer.currentPosition / mdxPlayer.duration
+    }
 
     // デバッグ用------------------------------------------
     rowLayoutDebugButtons{
@@ -51,6 +58,12 @@ PlayerForm {
     buttonLoad  {
         onClicked:{
             mdxPlayer.loadSong(true,"","",2,true);
+        }
+    }
+    buttonTrace  {
+        onClicked:{
+            console.log("currentPosition:", mdxPlayer.currentPosition);
+            console.log("duration:", mdxPlayer.duration);
         }
     }
 }

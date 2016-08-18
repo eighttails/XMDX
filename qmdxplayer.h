@@ -11,7 +11,10 @@ class QMDXPlayer : public QObject
     Q_OBJECT
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
-    Q_PROPERTY(float duration READ duration NOTIFY songLoaded)
+    Q_PROPERTY(float duration READ duration NOTIFY durationChanged)
+    Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged)
+    Q_PROPERTY(float currentPosition READ currentPosition NOTIFY currentPositionChanged)
+    Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
 
 public:
@@ -23,6 +26,7 @@ signals:
     void titleChanged();
     void fileNameChanged();
     void durationChanged();
+    void currentPositionChanged();
 
 public slots:
     bool loadSong(bool renderWav,
@@ -37,6 +41,9 @@ public:
     QString title();
     QString fileName();
     float duration();
+    QString durationString();
+    float currentPosition();
+    QString currentPositionString();
     bool isPlaying();
 
 private slots:

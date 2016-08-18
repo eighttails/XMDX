@@ -6,6 +6,7 @@ import QtQuick.Layouts 1.3
 Item {
     width: 320
     height: 200
+    property alias buttonTrace: buttonTrace
     property alias rowLayoutDebugButtons: rowLayoutDebugButtons
     property alias buttonLoad: buttonLoad
     property alias displayDuration: displayDuration
@@ -157,13 +158,17 @@ Item {
                 text: qsTr("LOAD")
                 Layout.fillWidth: false
             }
+
+            Button {
+                id: buttonTrace
+                text: qsTr("TRACE")
+            }
         }
 
         Slider {
             id: sliderPlayPosition
             Layout.fillHeight: false
             Layout.fillWidth: true
-            value: 0.5
         }
 
         Item {
