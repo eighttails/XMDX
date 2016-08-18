@@ -17,6 +17,12 @@ int main(int argc, char *argv[])
     engine.rootContext()->setContextProperty(QStringLiteral("mdxPlayer"), &mdxPlayer);
     engine.rootContext()->setContextProperty(QStringLiteral("mdxInfo"), &mdxInfo);
 
+#ifdef QT_DEBUG
+    engine.rootContext()->setContextProperty("debug", true);
+#else
+    engine.rootContext()->setContextProperty("debug", false);
+#endif
+
     engine.load(QUrl(QLatin1String("qrc:/qml/main.qml")));
     return app.exec();
 }

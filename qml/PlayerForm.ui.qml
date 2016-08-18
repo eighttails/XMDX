@@ -6,6 +6,8 @@ import QtQuick.Layouts 1.3
 Item {
     width: 320
     height: 200
+    property alias rowLayoutDebugButtons: rowLayoutDebugButtons
+    property alias buttonLoad: buttonLoad
     property alias displayDuration: displayDuration
     property alias displayFileName: displayFileName
     property alias displayTitle: displayTitle
@@ -109,7 +111,7 @@ Item {
         }
 
         RowLayout {
-            id: rowLayout1
+            id: rowLayoutButtons
             width: 100
             height: 100
             Layout.fillWidth: true
@@ -145,6 +147,18 @@ Item {
             }
         }
 
+        RowLayout {
+            id: rowLayoutDebugButtons
+            width: 100
+            height: 100
+
+            Button {
+                id: buttonLoad
+                text: qsTr("LOAD")
+                Layout.fillWidth: false
+            }
+        }
+
         Slider {
             id: sliderPlayPosition
             Layout.fillHeight: false
@@ -158,6 +172,7 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
+
 
 
     }

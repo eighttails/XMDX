@@ -3,6 +3,8 @@ import QtQuick 2.7
 PlayerForm {
     displayTitle {
         text: mdxPlayer.title
+
+        // 曲名が画面に収まらない場合にスクロール
         SequentialAnimation on leftPadding {
             id: marqueeScroll
             property int scrollTo: Math.min(0, displayTitle.width - displayTitle.contentWidth)
@@ -36,8 +38,19 @@ PlayerForm {
     }
     buttonLoop  {
         onClicked:{
-            mdxPlayer.loadSong(true,"","",2,true);
         }
     }
 
+
+    // デバッグ用------------------------------------------
+    rowLayoutDebugButtons{
+        // デバッグに必要な場合のみtrueにする。
+        visible: debug
+    }
+
+    buttonLoad  {
+        onClicked:{
+            mdxPlayer.loadSong(true,"","",2,true);
+        }
+    }
 }
