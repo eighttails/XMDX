@@ -12,31 +12,31 @@ PlayerForm {
             PropertyAnimation {
                 from: 0
                 to: marqueeScroll.scrollTo
-                duration: Math.abs(marqueeScroll.scrollTo) * 10
+                duration: Math.abs(marqueeScroll.scrollTo) * 20
             }
             PauseAnimation { duration: 1000 }
             PropertyAnimation {
                 from: marqueeScroll.scrollTo
                 to: 0
-                duration: Math.abs(marqueeScroll.scrollTo) * 10
+                duration: Math.abs(marqueeScroll.scrollTo) * 20
             }
         }
     }
 
-
     displayFileName.text: mdxPlayer.fileName;
     buttonPlay {
+        iconSource: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
         onClicked:{
-            mdxPlayer.loadSong(true,"","",2,true);
-            mdxPlayer.startPlay();
+            if (mdxPlayer.isPlaying){
+                mdxPlayer.stopPlay();
+            } else {
+                mdxPlayer.startPlay();
+            }
         }
     }
     buttonLoop  {
         onClicked:{
-            console.log("contentwidth:",displayTitle.contentWidth);
-            console.log("width:",displayTitle.width);
-            console.log("scrollTo:",displayTitle.scrollTo);
-
+            mdxPlayer.loadSong(true,"","",2,true);
         }
     }
 

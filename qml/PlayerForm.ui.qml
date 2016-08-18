@@ -46,7 +46,7 @@ Item {
                     clip: true
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
-                    font.pixelSize: 32
+                    font.pixelSize: 24
                     style: Text.Raised
                     textFormat: Text.PlainText
                 }
