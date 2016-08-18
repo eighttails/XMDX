@@ -13,7 +13,7 @@ class QMDXPlayer : public QObject
     Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
     Q_PROPERTY(float duration READ duration NOTIFY durationChanged)
     Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged)
-    Q_PROPERTY(float currentPosition READ currentPosition NOTIFY currentPositionChanged)
+    Q_PROPERTY(float currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged)
     Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
 
@@ -29,21 +29,34 @@ signals:
     void currentPositionChanged();
 
 public slots:
+    // 曲をロードする。
+    // 演奏せずにファイル情報を取得するだけの場合はrenderWavをfalseにする。
     bool loadSong(bool renderWav,
                   const QString& fileName,
                   const QString& pdxPath,
                   unsigned loops,
                   bool enableFadeout);
+    // 演奏開始
     bool startPlay();
+    // 演奏中断
     bool stopPlay();
+    // 曲中のシーク(引数は曲頭からの秒数)
+    bool setCurrentPosition(float position);
 
 public:
+    // 曲名を取得
     QString title();
+    // ファイル名を取得
     QString fileName();
+    // 曲長(秒)を取得
     float duration();
+    // 曲長(秒)をmm:ssフォーマットで取得
     QString durationString();
+    // 演奏中の位置(秒)を取得
     float currentPosition();
+    // 演奏中の位置(秒)をmm:ssフォーマットで取得
     QString currentPositionString();
+    // 演奏中かどうか取得
     bool isPlaying();
 
 private slots:
@@ -67,7 +80,7 @@ private:
     QPointer<QIODevice> audioBuffer_;
     QPointer<QAudioOutput> audioOutput_;
 
-    // 複数のインスタンスが同時にMXDEVを操作しないようにするための排他
+    // 複数のインスタンスが同時にMXDRVを操作しないようにするための排他
     static QMutex mutex_;
 };
 
