@@ -16,13 +16,15 @@ class QMDXPlayer : public QObject
     Q_PROPERTY(float currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged)
     Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionChanged)
     Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
+    Q_PROPERTY(bool isSongLoaded READ isSongLoaded NOTIFY isSongLoadedChanged)
+
 
 public:
     explicit QMDXPlayer(QObject *parent = 0);
 
 signals:
     void stateChanged();
-    void songLoaded();
+    void isSongLoadedChanged();
     void titleChanged();
     void fileNameChanged();
     void durationChanged();
@@ -58,15 +60,21 @@ public:
     QString currentPositionString();
     // 演奏中かどうか取得
     bool isPlaying();
+    // 曲がロードされているかどうか取得
+    bool isSongLoaded();
 
 private slots:
     void writeAudioBuffer();
+    void setIsSongLoaded(bool isSongLoaded);
 private:
     // 曲のタイトル
     QString title_;
 
     // 曲のファイル名(表示用)
     QString fileName_;
+
+    // 曲がロードされているか
+    bool isSongLoaded_;
 
     // 曲の長さ(秒)
     float duration_;

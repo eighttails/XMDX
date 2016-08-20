@@ -8,7 +8,7 @@ PlayerForm {
         SequentialAnimation on leftPadding {
             id: marqueeScroll
             property int scrollTo: Math.min(0, displayTitle.width - displayTitle.contentWidth)
-            running: mdxPlayer.isPlaying
+            running: mdxPlayer.title != ""
             loops: Animation.Infinite;
             PauseAnimation { duration: 1000 }
             PropertyAnimation {
@@ -26,9 +26,11 @@ PlayerForm {
     }
 
     displayFileName.text: mdxPlayer.fileName;
-    displayDuration.text: "%1/%2"
-    .arg(mdxPlayer.currentPositionString)
-    .arg(mdxPlayer.durationString)
+    displayDuration.text: !mdxPlayer.isSongLoaded ?
+                              "" :
+                              "%1/%2"
+                              .arg(mdxPlayer.currentPositionString)
+                              .arg(mdxPlayer.durationString)
 
     buttonPlay {
         contentItem: Image {

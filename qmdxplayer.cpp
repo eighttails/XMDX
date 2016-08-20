@@ -25,6 +25,7 @@ QMutex QMDXPlayer::mutex_(QMutex::Recursive);
 
 QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
+    , isSongLoaded_(false)
     , duration_(0.0)
     , maxSongDuration_(500)
     , wavIndex_(0)
@@ -53,9 +54,9 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE);
     audioOutput_->setNotifyInterval(50);
 
-    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::titleChanged);
-    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::fileNameChanged);
-    connect(this, &QMDXPlayer::songLoaded, this, &QMDXPlayer::durationChanged);
+    connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::titleChanged);
+    connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::fileNameChanged);
+    connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::durationChanged);
 }
 
 bool QMDXPlayer::loadSong(bool renderWav,
@@ -65,6 +66,10 @@ bool QMDXPlayer::loadSong(bool renderWav,
                           bool enableFadeout)
 {
     QMutexLocker l(&mutex_);
+    title_.clear();
+    fileName_.clear();
+    duration_ = 0;
+    setIsSongLoaded(false);
 
     int MDX_BUF_SIZE = 256 * 1024;
     int PDX_BUF_SIZE = 1024 * 1024;
@@ -159,7 +164,8 @@ bool QMDXPlayer::loadSong(bool renderWav,
     if (verbose) {
         fprintf(stderr, "completed.\n");
     }
-    emit songLoaded();
+
+    setIsSongLoaded(true);
     return true;
 }
 
@@ -239,9 +245,21 @@ bool QMDXPlayer::isPlaying()
     return audioOutput_->state() == QAudio::ActiveState;
 }
 
+bool QMDXPlayer::isSongLoaded()
+{
+    return isSongLoaded_;
+}
+
+void QMDXPlayer::setIsSongLoaded(bool isSongLoaded)
+{
+    isSongLoaded_ = isSongLoaded;
+    emit isSongLoadedChanged();
+}
+
 void QMDXPlayer::writeAudioBuffer()
 {
     QMutexLocker l(&mutex_);
     qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
     wavIndex_ += wrote;
 }
+
