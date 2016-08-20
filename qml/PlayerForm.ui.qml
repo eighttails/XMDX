@@ -1,6 +1,5 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
-import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.3
 
 Item {
@@ -18,6 +17,7 @@ Item {
     property alias buttonPlay: buttonPlay
     property alias buttonBackward: buttonBackward
     property alias buttonRandom: buttonRandom
+    property alias buttonMenu: buttonMenu
 
     ColumnLayout {
         id: columnLayout1
@@ -118,34 +118,57 @@ Item {
             Layout.fillWidth: true
 
             Button {
+                id: buttonMenu
+                Layout.fillWidth: true
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/menu.svg"
+                }
+            }
+
+            Button {
                 id: buttonRandom
                 checkable: true
-                tooltip: qsTr("")
                 Layout.fillWidth: true
-                iconSource: "qrc:/icon/random.svg"
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/random.svg"
+                }
             }
             Button {
                 id: buttonBackward
                 Layout.fillWidth: true
-                iconSource: "qrc:/icon/media-step-backward.svg"
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/media-step-backward.svg"
+                }
             }
             Button {
                 id: buttonPlay
-                Layout.fillHeight: false
                 Layout.fillWidth: true
-                iconSource: "qrc:/icon/media-play.svg"
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/media-play.svg"
+                }
             }
             Button {
                 id: buttonForward
                 Layout.fillWidth: true
-                iconSource: "qrc:/icon/media-step-forward.svg"
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/media-step-forward.svg"
+                }
             }
             Button {
                 id: buttonLoop
                 checkable: true
                 Layout.fillWidth: true
-                iconSource: "qrc:/icon/loop.svg"
+                contentItem: Image {
+                    fillMode: Image.PreserveAspectFit
+                    source: "qrc:/icon/loop.svg"
+                }
             }
+
         }
 
         RowLayout {
@@ -177,6 +200,7 @@ Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
         }
+
 
 
 

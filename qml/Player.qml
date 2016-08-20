@@ -31,7 +31,10 @@ PlayerForm {
     .arg(mdxPlayer.durationString)
 
     buttonPlay {
-        iconSource: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
+        contentItem: Image {
+            fillMode: Image.PreserveAspectFit
+            source: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
+        }
         onClicked:{
             if (mdxPlayer.isPlaying){
                 mdxPlayer.stopPlay();
@@ -46,7 +49,7 @@ PlayerForm {
     }
 
     sliderPlayPosition {
-        updateValueWhileDragging: false
+        //updateValueWhileDragging: false
         value: mdxPlayer.duration == 0 ? 0 : mdxPlayer.currentPosition / mdxPlayer.duration
         onPressedChanged: {
             if(sliderPlayPosition.pressed){
