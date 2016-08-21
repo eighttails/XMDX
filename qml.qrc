@@ -16,5 +16,7 @@
         <file>icon/volume-high.svg</file>
         <file>icon/volume-low.svg</file>
         <file>icon/x.svg</file>
+        <file>qml/PlayListView.qml</file>
+        <file>qml/PlayListViewForm.ui.qml</file>
     </qresource>
 </RCC>

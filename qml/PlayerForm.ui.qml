@@ -4,7 +4,8 @@ import QtQuick.Layouts 1.3
 
 Item {
     width: 320
-    height: 200
+    height: 230
+
     property alias buttonTrace: buttonTrace
     property alias rowLayoutDebugButtons: rowLayoutDebugButtons
     property alias buttonLoad: buttonLoad
@@ -28,8 +29,6 @@ Item {
             width: 200
             height: 100
             color: "steelblue"
-            Layout.alignment: Qt.AlignLeft | Qt.AlignTop
-            Layout.fillHeight: false
             Layout.fillWidth: true
 
             GridLayout {
@@ -107,14 +106,10 @@ Item {
                 layer.enabled: true
                 border.color: "#000000"
             }
-
-
         }
 
         RowLayout {
             id: rowLayoutButtons
-            width: 100
-            height: 100
             Layout.fillWidth: true
 
             Button {
@@ -123,6 +118,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/menu.svg"
+
                 }
             }
 
@@ -168,43 +164,26 @@ Item {
                     source: "qrc:/icon/loop.svg"
                 }
             }
-
         }
 
         RowLayout {
             id: rowLayoutDebugButtons
-            width: 100
-            height: 100
 
             Button {
                 id: buttonLoad
                 text: qsTr("LOAD")
-                Layout.fillWidth: false
             }
 
             Button {
                 id: buttonTrace
                 text: qsTr("TRACE")
+
             }
         }
 
         Slider {
             id: sliderPlayPosition
-            Layout.fillHeight: false
             Layout.fillWidth: true
         }
-
-        Item {
-            width: 200
-            height: 200
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-        }
-
-
-
-
     }
-
-
 }

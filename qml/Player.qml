@@ -51,7 +51,6 @@ PlayerForm {
     }
 
     sliderPlayPosition {
-        //updateValueWhileDragging: false
         value: mdxPlayer.duration == 0 ? 0 : mdxPlayer.currentPosition / mdxPlayer.duration
         onPressedChanged: {
             if(sliderPlayPosition.pressed){
