@@ -4,7 +4,7 @@ import QtQuick.Layouts 1.3
 
 Item {
     width: 320
-    height: 230
+    height: columnLayout1.height
 
     property alias buttonTrace: buttonTrace
     property alias rowLayoutDebugButtons: rowLayoutDebugButtons
@@ -22,7 +22,7 @@ Item {
 
     ColumnLayout {
         id: columnLayout1
-        anchors.fill: parent
+        width:parent.width
 
         Rectangle {
             id: displayPanel
