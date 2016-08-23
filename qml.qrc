@@ -18,5 +18,7 @@
         <file>icon/x.svg</file>
         <file>qml/PlayListView.qml</file>
         <file>qml/PlayListViewForm.ui.qml</file>
+        <file>qml/PlayListViewDelegate.qml</file>
+        <file>qml/PlayListViewDelegateForm.ui.qml</file>
     </qresource>
 </RCC>

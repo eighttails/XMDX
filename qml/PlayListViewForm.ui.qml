@@ -10,10 +10,8 @@ Item {
         id: playListView
         anchors.fill: parent
         clip: true
-        delegate: ItemDelegate {
-            text: modelData
-            width: parent.width
-            onClicked: console.log("clicked:", modelData)
+        model: ListModel {
+            id: playlist
         }
     }
 }
