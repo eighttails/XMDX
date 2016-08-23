@@ -574,7 +574,7 @@ ULONG MXDRVG_MeasurePlayTime(
 	MeasurePlayTime = FALSE;
 	SETOPMINT( L_OPMINT );
 
-	return ( (ULONG)(G.PLAYTIME*(LONGLONG)1024/4000+(1-DBL_EPSILON))+2000 );
+    return ( (ULONG)(G.PLAYTIME*(LONGLONG)1024/4000+(1-DBL_EPSILON)) );
 }
 
 /***************************************************************/
