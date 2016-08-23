@@ -10,6 +10,7 @@ Item {
         id: playListView
         anchors.fill: parent
         highlightFollowsCurrentItem: true
+        highlightMoveDuration: 500
         highlight: Rectangle {
         color: "dimgray"
         border.color: "red"
