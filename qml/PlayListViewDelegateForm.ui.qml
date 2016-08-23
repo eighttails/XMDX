@@ -10,12 +10,7 @@ Item {
     property alias mdxTitle: mdxTitle
     property alias itemDelegate1: itemDelegate1
 
-    Rectangle {
-        id: rectangle1
-        color: "dimgray"
-        border.color: "navy"
-        anchors.fill: parent
-    }
+
 
     ItemDelegate {
         id: itemDelegate1

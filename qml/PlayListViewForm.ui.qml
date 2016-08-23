@@ -9,6 +9,12 @@ Item {
     ListView {
         id: playListView
         anchors.fill: parent
+        highlightFollowsCurrentItem: true
+        highlight: Rectangle {
+        color: "dimgray"
+        border.color: "red"
+        }
+
         clip: true
         model: ListModel {
             id: playlist
