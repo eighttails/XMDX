@@ -13,7 +13,8 @@ SOURCES += main.cpp \
     mdx2wav/gamdx/pcm8/x68pcm8.cpp \
     mdx2wav/src/mdx2wav.cpp \
     mdx2wav/gamdx/mame/ym2151.c \
-    qmdxplayer.cpp
+    qmdxplayer.cpp \
+    helper.cpp
 
 RESOURCES += qml.qrc
 
@@ -62,4 +63,5 @@ HEADERS += \
     mdx2wav/gamdx/pcm8/pcm8.h \
     mdx2wav/gamdx/pcm8/x68pcm8.h \
     mdx2wav/gamdx/types.h \
-    qmdxplayer.h
+    qmdxplayer.h \
+    helper.h

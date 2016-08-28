@@ -3,6 +3,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include "qmdxplayer.h"
+#include "helper.h"
 
 int main(int argc, char *argv[])
 {
@@ -16,6 +17,9 @@ int main(int argc, char *argv[])
     QMDXPlayer mdxInfo; // 曲情報取得用
     engine.rootContext()->setContextProperty(QStringLiteral("mdxPlayer"), &mdxPlayer);
     engine.rootContext()->setContextProperty(QStringLiteral("mdxInfo"), &mdxInfo);
+
+    Helper helper;
+    engine.rootContext()->setContextProperty("appHelper", &helper);
 
 #ifdef QT_DEBUG
     engine.rootContext()->setContextProperty("debug", true);

@@ -34,6 +34,11 @@ Item {
                 font.pixelSize: 16
             }
 
+            Item {
+                id: spacing
+                width: 10
+            }
+
             Text {
                 id: mdxFileName
                 text: qsTr("FILENAME")
@@ -49,6 +54,7 @@ Item {
                 horizontalAlignment: Text.AlignRight
                 font.pixelSize: 12
             }
+
         }
     }
 }

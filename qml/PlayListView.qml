@@ -4,7 +4,7 @@ PlayListViewForm {
     playListView {
         delegate: PlayListViewDelegate {
             mdxTitle.text: title
-            mdxFileName.text: fileName
+            mdxFileName.text: appHelper.fileNameFromPath(fileName)
             width: parent.width
             itemDelegate1.onClicked: {
                 playListView.currentIndex = index;
