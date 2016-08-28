@@ -36,6 +36,7 @@ PlayerForm {
         contentItem: Image {
             fillMode: Image.PreserveAspectFit
             source: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
+            sourceSize.width: 12
         }
         onClicked:{
             if (mdxPlayer.isPlaying){

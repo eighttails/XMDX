@@ -118,7 +118,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/menu.svg"
-
+                    sourceSize.width: 12
                 }
             }
 
@@ -129,6 +129,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/random.svg"
+                    sourceSize.width: 12
                 }
             }
             Button {
@@ -137,6 +138,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/media-step-backward.svg"
+                    sourceSize.width: 12
                 }
             }
             Button {
@@ -145,6 +147,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/media-play.svg"
+                    sourceSize.width: 12
                 }
             }
             Button {
@@ -153,6 +156,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/media-step-forward.svg"
+                    sourceSize.width: 12
                 }
             }
             Button {
@@ -162,6 +166,7 @@ Item {
                 contentItem: Image {
                     fillMode: Image.PreserveAspectFit
                     source: "qrc:/icon/loop.svg"
+                    sourceSize.width: 12
                 }
             }
         }
