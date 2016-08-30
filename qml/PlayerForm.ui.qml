@@ -112,62 +112,32 @@ Item {
             id: rowLayoutButtons
             Layout.fillWidth: true
 
-            Button {
+            PanelButton {
                 id: buttonMenu
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/menu.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/menu.svg"
             }
 
-            Button {
+            PanelButton {
                 id: buttonRandom
                 checkable: true
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/random.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/random.svg"
             }
-            Button {
+            PanelButton {
                 id: buttonBackward
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/media-step-backward.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/media-step-backward.svg"
             }
-            Button {
+            PanelButton {
                 id: buttonPlay
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/media-play.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/media-play.svg"
             }
-            Button {
+            PanelButton {
                 id: buttonForward
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/media-step-forward.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/media-step-forward.svg"
             }
-            Button {
+            PanelButton {
                 id: buttonLoop
                 checkable: true
-                Layout.fillWidth: true
-                contentItem: Image {
-                    fillMode: Image.PreserveAspectFit
-                    source: "qrc:/icon/loop.svg"
-                    sourceSize.width: 12
-                }
+                iconSource: "qrc:/icon/loop.svg"
             }
         }
 

@@ -20,5 +20,6 @@
         <file>qml/PlayListViewForm.ui.qml</file>
         <file>qml/PlayListViewDelegate.qml</file>
         <file>qml/PlayListViewDelegateForm.ui.qml</file>
+        <file>qml/PanelButton.qml</file>
     </qresource>
 </RCC>

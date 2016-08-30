@@ -33,11 +33,7 @@ PlayerForm {
                               .arg(mdxPlayer.durationString)
 
     buttonPlay {
-        contentItem: Image {
-            fillMode: Image.PreserveAspectFit
-            source: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
-            sourceSize.width: 12
-        }
+        iconSource: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
         onClicked:{
             if (mdxPlayer.isPlaying){
                 mdxPlayer.stopPlay();
