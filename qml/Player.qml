@@ -67,13 +67,19 @@ PlayerForm {
 
     buttonLoad  {
         onClicked:{
-            mdxPlayer.loadSong(true,"","",2,true);
+            appHelper.loadPlayList("test");
+        }
+    }
+    buttonSave  {
+        onClicked:{
+            appHelper.savePlayList("test");
         }
     }
     buttonTrace  {
         onClicked:{
             console.log("currentPosition:", mdxPlayer.currentPosition);
             console.log("duration:", mdxPlayer.duration);
+            console.log("playList items:", playList.count)
         }
     }
 }

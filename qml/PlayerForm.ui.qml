@@ -5,6 +5,7 @@ import QtQuick.Layouts 1.3
 Item {
     width: 320
     height: columnLayout1.height
+    property alias buttonSave: buttonSave
 
     property alias buttonTrace: buttonTrace
     property alias rowLayoutDebugButtons: rowLayoutDebugButtons
@@ -150,10 +151,18 @@ Item {
             }
 
             Button {
+                id: buttonSave
+                x: 106
+                y: 22
+                text: qsTr("SAVE")
+            }
+
+            Button {
                 id: buttonTrace
                 text: qsTr("TRACE")
 
             }
+
         }
 
         Slider {

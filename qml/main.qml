@@ -30,23 +30,7 @@ ApplicationWindow {
             visible:true
             Layout.fillWidth: true
             Layout.fillHeight: true
-            playListView {
-                model: Playlist {
-                    id: playlist
-                    PlaylistItem { source: "song1.ogg"; }
-                    PlaylistItem { source: "song2.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                    PlaylistItem { source: "song3.ogg"; }
-                }
-            }
+            //playListView.model: playList
         }
 
         Menu{

@@ -17,10 +17,8 @@ Item {
                 color: "dimgray"
                 border.color: "red"
             }
+            model: playList
 
-            model: ListModel {
-                id: playlist
-            }
         }
     }
 }
