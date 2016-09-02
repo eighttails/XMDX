@@ -4,6 +4,7 @@
 #include <QQuickStyle>
 #include "qmdxplayer.h"
 #include "helper.h"
+#include "playlistitem.h"
 
 int main(int argc, char *argv[])
 {
@@ -15,12 +16,17 @@ int main(int argc, char *argv[])
 
     QMDXPlayer mdxPlayer; // 音楽再生用
     QMDXPlayer mdxInfo; // 曲情報取得用
-    engine.rootContext()->setContextProperty(QStringLiteral("mdxPlayer"), &mdxPlayer);
-    engine.rootContext()->setContextProperty(QStringLiteral("mdxInfo"), &mdxInfo);
+    engine.rootContext()->setContextProperty("mdxPlayer", &mdxPlayer);
+    engine.rootContext()->setContextProperty("mdxInfo", &mdxInfo);
 
-    Helper helper;
+    QList<QObject*> playList;
+    engine.rootContext()->setContextProperty("playList", QVariant::fromValue(playList));
+
+    Helper helper(engine.rootContext(), &playList);
     engine.rootContext()->setContextProperty("appHelper", &helper);
 
+    // デフォルトのプレイリストをロード
+    helper.loadDefaultPlaylist();
 #ifdef QT_DEBUG
     engine.rootContext()->setContextProperty("debug", true);
 #else

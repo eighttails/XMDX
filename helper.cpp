@@ -1,8 +1,10 @@
 #include <QStandardPaths>
 #include <QDir>
+#include <QDirIterator>
 #include <QDataStream>
 #include "helper.h"
 #include "playlistitem.h"
+#include "qmdxplayer.h"
 
 Helper::Helper(QQmlContext* rootContext, QList<QObject*>* playList, QObject *parent)
     : QObject(parent)
@@ -18,47 +20,116 @@ void Helper::clearPlayList()
     while(!playList_->isEmpty()){
         delete playList_->takeFirst();
     }
+    // クリアした状態をデフォルトとして反映
+    saveDefaultPlayList();
     notifyPlayListUpdated();
 }
 
 bool Helper::loadPlayList(QString playListName)
 {
     QString loadPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    QString playListFileName = loadPath + QDir::separator() + playListName;
+    loadPlayList(loadPath, playListName);
+    // 読み込んだプレイリストはデフォルトとして反映
+    saveDefaultPlayList();
+}
+
+bool Helper::savePlayList(QString playListName)
+{
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
+    savePlayList(savePath, playListName);
+}
+
+bool Helper::loadDefaultPlaylist()
+{
+    QString loadPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    loadPlayList(loadPath, "PlayList");
+}
+
+bool Helper::saveDefaultPlayList()
+{
+    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+    savePlayList(savePath, "PlayList");
+}
+
+bool Helper::addFile(QString mdxFile)
+{
+    QMDXPlayer player;
+    if(!player.loadSong(false, mdxFile, "", 1, true)){
+        return false;
+    }
+    PlayListItem* item = new PlayListItem(player.title(), mdxFile);
+    playList_->append(item);
+    saveDefaultPlayList();
+    notifyPlayListUpdated();
+    return true;
+}
+
+bool Helper::addFolder(QString addPath)
+{
+    QDir addFolderPath(addPath);
+    if(!addFolderPath.exists()){
+        return false;
+    }
+    // 再帰的にフォルダをスキャン
+    QStringList nameFilters;
+    nameFilters << "*.mdx";
+    QDirIterator it(addPath, nameFilters, QDir::Files, QDirIterator::Subdirectories);
+    QMDXPlayer player;
+
+    while (it.hasNext())
+    {
+        QString mdxFile = it.next();
+        if(!player.loadSong(false, mdxFile, "", 1, true)){
+            continue;
+        }
+        PlayListItem* item = new PlayListItem(player.title(), it.filePath());
+        playList_->append(item);
+    }
+    saveDefaultPlayList();
+    notifyPlayListUpdated();
+    return true;
+}
+
+bool Helper::loadPlayList(QString path, QString playListName)
+{
+    QString playListFileName = path + QDir::separator() + playListName;
 
     QFile playListFile(playListFileName);
     QDataStream stream(&playListFile);
     if(!playListFile.open(QIODevice::ReadOnly)){
         return false;
     }
-    clearPlayList();
+    while(!playList_->isEmpty()){
+        delete playList_->takeFirst();
+    }
     while(!stream.atEnd()){
         QString title, fileName;
         stream >> title >> fileName;
         playList_->append(new PlayListItem(title, fileName));
     }
     notifyPlayListUpdated();
+    return true;
 }
 
-bool Helper::savePlayList(QString playListName)
+bool Helper::savePlayList(QString path, QString playListName)
 {
-    QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-    QString playListFileName = savePath + QDir::separator() + playListName;
+    QString playListFileName = path + QDir::separator() + playListName;
 
-    QDir d(savePath);
+    QDir d(path);
     if(!d.exists()){
-       if (!d.mkpath(savePath))
-           return false;
+        if (!d.mkpath(path))
+            return false;
     }
     QFile playListFile(playListFileName);
     QDataStream stream(&playListFile);
-    if(!playListFile.open(QIODevice::WriteOnly)){
+    if(!playListFile.open(QIODevice::WriteOnly | QIODevice::Truncate)){
         return false;
     }
     foreach(auto item, *playList_){
         PlayListItem* playListItem = qobject_cast<PlayListItem*>(item);
         stream << playListItem->title() << playListItem->fileName();
     }
+    return true;
 }
 
 void Helper::notifyPlayListUpdated()
