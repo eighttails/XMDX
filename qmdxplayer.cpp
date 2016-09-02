@@ -108,6 +108,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
     char title[256];
 
     if (!LoadMDX(mdx_name, title, sizeof(title))) {
+        MXDRVG_End();
         return false;
     }
     QTextCodec *sjis = QTextCodec::codecForName("Shift-JIS");
@@ -128,7 +129,10 @@ bool QMDXPlayer::loadSong(bool renderWav,
     }
     duration_ = song_duration;
 
-    if (!renderWav) return true;
+    if (!renderWav){
+        MXDRVG_End();
+        return true;
+    }
 
     short *audio_buf = new short [AUDIO_BUF_SAMPLES * 2];
 
