@@ -1,11 +1,11 @@
-import QtQuick 2.4
+import QtQuick 2.7
 import QtQuick.Layouts 1.3
 import QtQuick.Controls 2.0
 
 Item {
     id: item1
     width: 400
-    height: 30
+    height: 40
     property alias mdxFileName: mdxFileName
     property alias mdxTitle: mdxTitle
     property alias itemDelegate1: itemDelegate1
@@ -16,45 +16,48 @@ Item {
         id: itemDelegate1
         anchors.fill: parent
 
-        RowLayout {
-            id: rowLayout1
+        ColumnLayout {
+            id: columnLayout1
             anchors.fill: parent
 
             Text {
                 id: mdxTitle
-                width: 50
                 text: qsTr("TITLE")
+                clip: false
                 elide: Text.ElideRight
                 color: "white"
                 Layout.fillWidth: true
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.topMargin: 2
+                Layout.leftMargin: 5
+                Layout.rightMargin: 5
                 style: Text.Raised
-                anchors.left: parent.left
-                anchors.leftMargin: 5
                 font.pixelSize: 16
-            }
-
-            Item {
-                id: spacing
-                width: 10
             }
 
             Text {
                 id: mdxFileName
                 text: qsTr("FILENAME")
-                clip: true
+                horizontalAlignment: Text.AlignRight
+                clip: false
                 elide: Text.ElideLeft
                 color: "white"
-                Layout.maximumWidth: 100
-                Layout.fillWidth: false
-                anchors.verticalCenter: parent.verticalCenter
+                Layout.fillWidth: true
+                Layout.leftMargin: 5
+                Layout.rightMargin: 5
+                Layout.bottomMargin: 2
                 style: Text.Raised
-                anchors.right: parent.right
-                anchors.rightMargin: 5
-                horizontalAlignment: Text.AlignRight
                 font.pixelSize: 12
             }
+            Item {
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+            }
+        }
 
+        Rectangle {
+            anchors.fill: parent
+            color: "#00000000"
+            border.color: "gray"
         }
     }
 }

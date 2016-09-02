@@ -16,6 +16,7 @@ Item {
             highlight: Rectangle {
                 color: "dimgray"
                 border.color: "red"
+                border.width: 3
             }
             model: playList
 
