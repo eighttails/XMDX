@@ -18,7 +18,7 @@ Helper::Helper(QQmlContext* rootContext, QList<QObject*>* playList, QObject *par
 void Helper::clearPlayList()
 {
     while(!playList_->isEmpty()){
-        delete playList_->takeFirst();
+        playList_->takeFirst()->deleteLater();
     }
     // クリアした状態をデフォルトとして反映
     saveDefaultPlayList();
@@ -100,7 +100,7 @@ bool Helper::loadPlayList(QString path, QString playListName)
         return false;
     }
     while(!playList_->isEmpty()){
-        delete playList_->takeFirst();
+        playList_->takeFirst()->deleteLater();
     }
     while(!stream.atEnd()){
         QString title, fileName;
