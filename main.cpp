@@ -1,4 +1,5 @@
 #include <QGuiApplication>
+
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -15,9 +16,7 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
 
     QMDXPlayer mdxPlayer; // 音楽再生用
-    QMDXPlayer mdxInfo; // 曲情報取得用
     engine.rootContext()->setContextProperty("mdxPlayer", &mdxPlayer);
-    engine.rootContext()->setContextProperty("mdxInfo", &mdxInfo);
 
     QList<QObject*> playList;
     engine.rootContext()->setContextProperty("playList", QVariant::fromValue(playList));

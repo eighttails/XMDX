@@ -53,11 +53,12 @@ bool Helper::saveDefaultPlayList()
 
 bool Helper::addFile(QString mdxFile)
 {
+    QString mdxFileName = QUrl(mdxFile).toLocalFile();
     QMDXPlayer player;
-    if(!player.loadSong(false, mdxFile, "", 1, true)){
+    if(!player.loadSong(false, mdxFileName, "", 1, true)){
         return false;
     }
-    PlayListItem* item = new PlayListItem(player.title(), mdxFile);
+    PlayListItem* item = new PlayListItem(player.title(), mdxFileName);
     playList_->append(item);
     saveDefaultPlayList();
     notifyPlayListUpdated();
