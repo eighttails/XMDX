@@ -2,6 +2,9 @@
 #include <QDir>
 #include <QDirIterator>
 #include <QDataStream>
+#include <QFileDialog>
+#include <QGuiApplication>
+
 #include "helper.h"
 #include "playlistitem.h"
 #include "qmdxplayer.h"
@@ -53,12 +56,11 @@ bool Helper::saveDefaultPlayList()
 
 bool Helper::addFile(QString mdxFile)
 {
-    QString mdxFileName = QUrl(mdxFile).toLocalFile();
     QMDXPlayer player;
-    if(!player.loadSong(false, mdxFileName, "", 1, true)){
+    if(!player.loadSong(false, mdxFile, "", 1, true)){
         return false;
     }
-    PlayListItem* item = new PlayListItem(player.title(), mdxFileName);
+    PlayListItem* item = new PlayListItem(player.title(), mdxFile);
     playList_->append(item);
     saveDefaultPlayList();
     notifyPlayListUpdated();
@@ -74,6 +76,7 @@ bool Helper::addFolder(QString addPath)
     // 再帰的にフォルダをスキャン
     QStringList nameFilters;
     nameFilters << "*.mdx";
+    nameFilters << "*.MDX";
     QDirIterator it(addPath, nameFilters, QDir::Files, QDirIterator::Subdirectories);
     QMDXPlayer player;
 
@@ -89,6 +92,51 @@ bool Helper::addFolder(QString addPath)
     saveDefaultPlayList();
     notifyPlayListUpdated();
     return true;
+}
+
+QString Helper::addFileDialog()
+{
+    // GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+    QFileDialog::Options opt = 0;
+    if (QGuiApplication::platformName() == QLatin1String("xcb")){
+        opt |= QFileDialog::DontUseNativeDialog;
+    }
+
+    QFileDialog dialog;
+    dialog.setOptions(opt);
+    dialog.setFileMode(QFileDialog::ExistingFile);
+    dialog.setNameFilter("MDX files (*.MDX *.mdx)");
+#ifdef ALWAYSFULLSCREEN
+    dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+#endif
+    QString result;
+    if (dialog.exec() == QDialog::Accepted) {
+        result = dialog.selectedFiles().value(0);
+    }
+    return result;
+}
+
+QString Helper::addFolderDialog()
+{
+    // GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
+    QFileDialog::Options opt = QFileDialog::ShowDirsOnly;
+    if (QGuiApplication::platformName() == QLatin1String("xcb")){
+        opt |= QFileDialog::DontUseNativeDialog;
+    }
+
+    QFileDialog dialog;
+    dialog.setFileMode(QFileDialog::DirectoryOnly);
+    dialog.setOptions(opt);
+#ifdef ALWAYSFULLSCREEN
+    dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
+#endif
+
+    QString result;
+    if (dialog.exec() == QDialog::Accepted) {
+        result = dialog.selectedFiles().value(0).toUtf8();
+    }
+
+    return result;
 }
 
 bool Helper::loadPlayList(QString path, QString playListName)

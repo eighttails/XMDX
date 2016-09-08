@@ -1,6 +1,10 @@
-QT += qml quick multimedia quickcontrols2 svg
+QT += qml quick quickcontrols2 widgets multimedia svg
 
 CONFIG += c++11
+
+android:{
+DEFINES += ALWAYSFULLSCREEN
+}
 
 SOURCES += main.cpp \
     mdx2wav/gamdx/downsample/downsample.cpp \

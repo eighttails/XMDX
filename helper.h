@@ -28,6 +28,12 @@ public:
     // プレイリストにファイルを追加
     Q_INVOKABLE bool addFile(QString mdxFile);
     Q_INVOKABLE bool addFolder(QString addPath);
+
+    // ファイル選択、フォルダ選択ダイアログを開く
+    // キャンセルされたときは空文字列を返す
+    Q_INVOKABLE QString addFileDialog();
+    Q_INVOKABLE QString addFolderDialog();
+
 signals:
 
 public slots:
