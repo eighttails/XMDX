@@ -67,7 +67,7 @@ bool Helper::addFile(QString mdxFile)
     return true;
 }
 
-bool Helper::addFolder(QString addPath)
+bool Helper::addFolder(QString addPath, bool isTopFolder)
 {
     QDir addFolderPath(addPath);
     if(!addFolderPath.exists()){
@@ -77,20 +77,26 @@ bool Helper::addFolder(QString addPath)
     QStringList nameFilters;
     nameFilters << "*.mdx";
     nameFilters << "*.MDX";
-    QDirIterator it(addPath, nameFilters, QDir::Files, QDirIterator::Subdirectories);
-    QMDXPlayer player;
 
-    while (it.hasNext())
-    {
-        QString mdxFile = it.next();
-        if(!player.loadSong(false, mdxFile, "", 1, true)){
+    QMDXPlayer player;
+    QFileInfoList fileList = addFolderPath.entryInfoList(nameFilters, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
+
+    foreach(QFileInfo info, fileList){
+        if(info.isDir()){
+            addFolder(addFolderPath.absolutePath() + QDir::separator() + info.fileName(), false);
+        }
+
+        if(!player.loadSong(false, info.absoluteFilePath(), "", 1, true)){
             continue;
         }
-        PlayListItem* item = new PlayListItem(player.title(), it.filePath());
+        PlayListItem* item = new PlayListItem(player.title(), info.absoluteFilePath());
         playList_->append(item);
     }
-    saveDefaultPlayList();
-    notifyPlayListUpdated();
+
+    if(isTopFolder){
+        saveDefaultPlayList();
+        notifyPlayListUpdated();
+    }
     return true;
 }
 
