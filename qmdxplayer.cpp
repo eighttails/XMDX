@@ -71,11 +71,10 @@ bool QMDXPlayer::loadSong(bool renderWav,
     duration_ = 0;
     setIsSongLoaded(false);
 
-    int MDX_BUF_SIZE = 256 * 1024;
-    int PDX_BUF_SIZE = 1024 * 1024;
-    int SAMPLE_RATE = PLAY_SAMPLE_RATE;
-    int filter_mode = 0;
-    bool verbose = false;
+    constexpr int MDX_BUF_SIZE = 256 * 1024;
+    constexpr int PDX_BUF_SIZE = 1024 * 1024;
+    constexpr int SAMPLE_RATE = PLAY_SAMPLE_RATE;
+    constexpr int filter_mode = 0;
 
     float max_song_duration = maxSongDuration_;
     int loop = loops;
@@ -120,10 +119,6 @@ bool QMDXPlayer::loadSong(bool renderWav,
     //          thus we need to call MXDRVG_PlayAt due to reset playing status.
     MXDRVG_PlayAt(0, loop, fadeout);
 
-    if (verbose) {
-        fprintf(stderr, "loop:%d fadeout:%d song_duration:%f\n", loop, fadeout, song_duration);
-    }
-
     if (max_song_duration < song_duration) {
         song_duration = max_song_duration;
     }
@@ -134,11 +129,11 @@ bool QMDXPlayer::loadSong(bool renderWav,
         return true;
     }
 
-    short *audio_buf = new short [AUDIO_BUF_SAMPLES * 2];
-
     wavIndex_ = 0;
     wavBuffer_.clear();
     wavBuffer_.reserve(SAMPLE_RATE * song_duration * BYTES_PER_SAMPLE);
+
+    short audio_buf[AUDIO_BUF_SAMPLES * 2];
     for (int i = 0; song_duration == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < song_duration; i++) {
         if (MXDRVG_GetTerminated()) {
             break;
@@ -162,12 +157,6 @@ bool QMDXPlayer::loadSong(bool renderWav,
         wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
     }
     MXDRVG_End();
-
-    delete []audio_buf;
-
-    if (verbose) {
-        fprintf(stderr, "completed.\n");
-    }
 
     setIsSongLoaded(true);
     return true;
