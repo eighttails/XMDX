@@ -20,14 +20,21 @@ constexpr size_t PLAY_SAMPLE_RATE = 44100;
 constexpr int CHANNELS = 2;
 constexpr int SAMPLE_SIZE = 16;
 constexpr int BYTES_PER_SAMPLE = SAMPLE_SIZE / 8 * CHANNELS;
+constexpr int MDX_BUF_SIZE = 256 * 1024;
+constexpr int PDX_BUF_SIZE = 1024 * 1024;
+constexpr int SAMPLE_RATE = PLAY_SAMPLE_RATE;
+constexpr int filter_mode = 0;
+constexpr int AUDIO_BUF_SAMPLES = SAMPLE_RATE / 100; // 10ms
 
 QMutex QMDXPlayer::mutex_(QMutex::Recursive);
+std::shared_ptr<std::thread> QMDXPlayer::renderingThread_;
+std::atomic_bool QMDXPlayer::quitRenderingThread_(false);
 
 QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
     , isSongLoaded_(false)
     , duration_(0.0)
-    , maxSongDuration_(500)
+    , maxSongDuration_(20*60)
     , wavIndex_(0)
 {
     //実行時に出る警告の抑止
@@ -49,7 +56,6 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 
     audioOutput_ = new QAudioOutput(info, format, this);
     connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
-    connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::currentPositionChanged);
     connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::stateChanged);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE);
     audioOutput_->setNotifyInterval(50);
@@ -59,105 +65,90 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::durationChanged);
 }
 
+QMDXPlayer::~QMDXPlayer()
+{
+    terminateRenderingThread();
+}
+
 bool QMDXPlayer::loadSong(bool renderWav,
                           const QString &fileName,
                           const QString &pdxPath,
                           unsigned loops,
                           bool enableFadeout)
 {
-    QMutexLocker l(&mutex_);
-    title_.clear();
-    fileName_.clear();
-    duration_ = 0;
-    setIsSongLoaded(false);
+    // レンダリングスレッドが起こっていたら先に終了しておく
+    terminateRenderingThread();
+    {
+        QMutexLocker l(&mutex_);
 
-    constexpr int MDX_BUF_SIZE = 256 * 1024;
-    constexpr int PDX_BUF_SIZE = 1024 * 1024;
-    constexpr int SAMPLE_RATE = PLAY_SAMPLE_RATE;
-    constexpr int filter_mode = 0;
+        title_.clear();
+        fileName_.clear();
+        duration_ = 0;
+        setIsSongLoaded(false);
 
-    float max_song_duration = maxSongDuration_;
-    int loop = loops;
-    int fadeout = enableFadeout ? 1 : 0;
-    char ym2151_type[8] = "fmgen";
+        float max_song_duration = maxSongDuration_;
+        int loop = loops;
+        int fadeout = enableFadeout ? 1 : 0;
+        char ym2151_type[8] = "fmgen";
 
-    int AUDIO_BUF_SAMPLES = SAMPLE_RATE / 100; // 10ms
+        // ファイル名がからの場合は環境変数からファイル名を取得(デバッグ用)
+        const QByteArray openFileName = fileName.isEmpty()
+                ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME").toLocal8Bit()
+                : fileName.toLocal8Bit();
+        const char *mdx_name = openFileName.data();
+        if (mdx_name == 0 || *mdx_name == 0) {
+            return false;
+        }
+        fileName_ = QFileInfo(openFileName).fileName();
 
-    // ファイル名がからの場合は環境変数からファイル名を取得(デバッグ用)
-    const QByteArray openFileName = fileName.isEmpty()
-            ? QProcessEnvironment::systemEnvironment().value("MDX_FILE_NAME").toLocal8Bit()
-            : fileName.toLocal8Bit();
-    const char *mdx_name = openFileName.data();
-    if (mdx_name == 0 || *mdx_name == 0) {
-        return false;
-    }
-    fileName_ = QFileInfo(openFileName).fileName();
-
-    if (0 == strcmp(ym2151_type, "fmgen")) {
-    } else if (0 == strcmp(ym2151_type, "mame")) {
-        MXDRVG_SetEmulationType(MXDRVG_YM2151TYPE_MAME);
-    } else {
-        fprintf(stderr, "Invalid ym2151 emulation type: %s.\n", ym2151_type);
-        return false;
-    }
-
-    MXDRVG_Start(SAMPLE_RATE, filter_mode, MDX_BUF_SIZE, PDX_BUF_SIZE);
-    MXDRVG_TotalVolume(256);
-
-    char title[256];
-
-    if (!LoadMDX(mdx_name, title, sizeof(title))) {
-        MXDRVG_End();
-        return false;
-    }
-    QTextCodec *sjis = QTextCodec::codecForName("Shift-JIS");
-    title_ = sjis->toUnicode(title);
-
-    float song_duration = MXDRVG_MeasurePlayTime(loop, fadeout) / 1000.0f;
-    int doFadeout = MXDRVG_GetFadeoutStart();
-    // Warning: MXDRVG_MeasurePlayTime calls MXDRVG_End internaly,
-    //          thus we need to call MXDRVG_PlayAt due to reset playing status.
-    MXDRVG_PlayAt(0, loop, fadeout);
-
-    if (max_song_duration < song_duration) {
-        song_duration = max_song_duration;
-    }
-    duration_ = song_duration;
-
-    if (!renderWav){
-        MXDRVG_End();
-        return true;
-    }
-
-    wavIndex_ = 0;
-    wavBuffer_.clear();
-    wavBuffer_.reserve(SAMPLE_RATE * song_duration * BYTES_PER_SAMPLE);
-
-    short audio_buf[AUDIO_BUF_SAMPLES * 2];
-    for (int i = 0; song_duration == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < song_duration; i++) {
-        if (MXDRVG_GetTerminated()) {
-            break;
+        if (0 == strcmp(ym2151_type, "fmgen")) {
+        } else if (0 == strcmp(ym2151_type, "mame")) {
+            MXDRVG_SetEmulationType(MXDRVG_YM2151TYPE_MAME);
+        } else {
+            fprintf(stderr, "Invalid ym2151 emulation type: %s.\n", ym2151_type);
+            return false;
         }
 
-        float current = 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE;
-        float fadevol = 1.0;
-        if( doFadeout && song_duration - current < 10.0 ){
-            fadevol = (song_duration - current) / 10.0;
+        MXDRVG_Start(SAMPLE_RATE, filter_mode, MDX_BUF_SIZE, PDX_BUF_SIZE);
+        MXDRVG_TotalVolume(256);
+
+        char title[256];
+
+        if (!LoadMDX(mdx_name, title, sizeof(title))) {
+            MXDRVG_End();
+            return false;
+        }
+        QTextCodec *sjis = QTextCodec::codecForName("Shift-JIS");
+        title_ = sjis->toUnicode(title);
+
+        float song_duration = MXDRVG_MeasurePlayTime(loop, fadeout) / 1000.0f;
+        doFadeout_ = MXDRVG_GetFadeoutStart() ? true : false;
+        // Warning: MXDRVG_MeasurePlayTime calls MXDRVG_End internaly,
+        //          thus we need to call MXDRVG_PlayAt due to reset playing status.
+        MXDRVG_PlayAt(0, loop, fadeout);
+
+        if (max_song_duration < song_duration) {
+            song_duration = max_song_duration;
+        }
+        duration_ = song_duration;
+
+        if (!renderWav){
+            MXDRVG_End();
+            return true;
         }
 
-        int len = MXDRVG_GetPCM(audio_buf, AUDIO_BUF_SAMPLES);
-        if (len <= 0) {
-            break;
-        }
-
-        for (int j = 0; j < len * 2; j++){
-            audio_buf[j] *= fadevol;
-        }
-
-        wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
+        // レンダリングを非同期で開始
+        // MXDRVG_End()は別スレッドで呼び出す
+        startRenderingThread();
     }
-    MXDRVG_End();
-
+    while(true){
+        // 10秒分のデータがレンダリングできたらUIに通知を送る
+        {
+            QMutexLocker l(&mutex_);
+            if(wavBuffer_.size() >= SAMPLE_RATE * std::min(duration_, 10.0f) * BYTES_PER_SAMPLE) break;
+        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    }
     setIsSongLoaded(true);
     return true;
 }
@@ -249,10 +240,65 @@ void QMDXPlayer::setIsSongLoaded(bool isSongLoaded)
     emit isSongLoadedChanged();
 }
 
+void QMDXPlayer::startRenderingThread()
+{
+    if(renderingThread_){
+        terminateRenderingThread();
+    }
+    renderingThread_.reset(new std::thread(&QMDXPlayer::renderingThread, this));
+}
+
+void QMDXPlayer::terminateRenderingThread()
+{
+    if(renderingThread_){
+        quitRenderingThread_ = true;
+        renderingThread_->join();
+        renderingThread_.reset();
+        quitRenderingThread_ = false;
+    }
+}
+
+void QMDXPlayer::renderingThread()
+{
+    {
+        QMutexLocker l(&mutex_);
+        wavIndex_ = 0;
+        wavBuffer_.clear();
+        wavBuffer_.reserve(SAMPLE_RATE * duration_ * BYTES_PER_SAMPLE);
+    }
+
+    short audio_buf[AUDIO_BUF_SAMPLES * 2];
+    for (int i = 0; duration_ == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < duration_; i++) {
+        if (quitRenderingThread_ || MXDRVG_GetTerminated()) {
+            break;
+        }
+
+        float current = 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE;
+        float fadevol = 1.0;
+        if( doFadeout_ && duration_ - current < 10.0 ){
+            fadevol = (duration_ - current) / 10.0;
+        }
+
+        int len = MXDRVG_GetPCM(audio_buf, AUDIO_BUF_SAMPLES);
+        if (len <= 0) {
+            break;
+        }
+
+        for (int j = 0; j < len * 2; j++){
+            audio_buf[j] *= fadevol;
+        }
+
+        QMutexLocker l(&mutex_);
+        wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
+    }
+    MXDRVG_End();
+}
+
 void QMDXPlayer::writeAudioBuffer()
 {
     QMutexLocker l(&mutex_);
     qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
     wavIndex_ += wrote;
+    emit currentPositionChanged();
 }
 

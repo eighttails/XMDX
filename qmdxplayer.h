@@ -1,6 +1,7 @@
 #ifndef QMDXPLAYER_H
 #define QMDXPLAYER_H
 
+#include <thread>
 #include <QObject>
 #include <QPointer>
 #include <QMutex>
@@ -21,7 +22,7 @@ class QMDXPlayer : public QObject
 
 public:
     explicit QMDXPlayer(QObject *parent = 0);
-
+    ~QMDXPlayer() override;
 signals:
     void stateChanged();
     void isSongLoadedChanged();
@@ -66,7 +67,14 @@ public:
 private slots:
     void writeAudioBuffer();
     void setIsSongLoaded(bool isSongLoaded);
+    void startRenderingThread();
+    void terminateRenderingThread();
 private:
+    // サウンドデータのレンダリングスレッド
+    static std::atomic_bool quitRenderingThread_;
+    static std::shared_ptr<std::thread> renderingThread_;
+    void renderingThread();
+
     // 曲のタイトル
     QString title_;
 
@@ -80,16 +88,20 @@ private:
     float duration_;
     float maxSongDuration_;
 
+    // 曲がフェードアウトするかどうか
+    bool doFadeout_;
+
     // レンダリングしたWAVバッファ
     QByteArray wavBuffer_;
     // 現在再生中のバッファインデックス
-    size_t wavIndex_;
+    std::atomic_size_t wavIndex_;
 
     QPointer<QIODevice> audioBuffer_;
     QPointer<QAudioOutput> audioOutput_;
 
     // 複数のインスタンスが同時にMXDRVを操作しないようにするための排他
     static QMutex mutex_;
+
 };
 
 #endif // QMDXPLAYER_H
