@@ -3,6 +3,7 @@
 #include <QProcessEnvironment>
 #include <QTextCodec>
 #include <QFileInfo>
+#include <QTimer>
 
 #include "qmdxplayer.h"
 #include "mdx2wav/gamdx/mxdrvg/mxdrvg.h"
@@ -55,10 +56,12 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     }
 
     audioOutput_ = new QAudioOutput(info, format, this);
-    connect(audioOutput_.data(), &QAudioOutput::notify, this, &QMDXPlayer::writeAudioBuffer);
+    QTimer* timer = new QTimer(this);
+    timer->setInterval(50);
+    timer->start();
+    connect(timer, &QTimer::timeout, this, &QMDXPlayer::writeAudioBuffer);
     connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::stateChanged);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE);
-    audioOutput_->setNotifyInterval(50);
 
     connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::titleChanged);
     connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::fileNameChanged);
@@ -183,9 +186,16 @@ bool QMDXPlayer::stopPlay()
 bool QMDXPlayer::setCurrentPosition(float position)
 {
     QMutexLocker l(&mutex_);
-    wavIndex_ = wavBuffer_.size() * position / duration();
-    wavIndex_ -= wavIndex_ % BYTES_PER_SAMPLE;
+    // 秒数×サンプルレート×サンプルサイズがバファ上のインデックスとなる
+    size_t index = position * SAMPLE_RATE * BYTES_PER_SAMPLE;
+    // サンプルサイズの整数倍に切り詰める
+    index -= index % BYTES_PER_SAMPLE;
+    // 算出したインデックスがバッファサイズより大きい(レンダリングが完了してない)場合は抜ける
+    if(index > wavBuffer_.size()) return false;
+
+    wavIndex_ = index;
     emit currentPositionChanged();
+    return true;
 }
 
 QString QMDXPlayer::title()
@@ -296,9 +306,12 @@ void QMDXPlayer::renderingThread()
 
 void QMDXPlayer::writeAudioBuffer()
 {
-    QMutexLocker l(&mutex_);
-    qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
-    wavIndex_ += wrote;
+    {
+        QMutexLocker l(&mutex_);
+        if(!audioBuffer_) return;
+        qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
+        wavIndex_ += wrote;
+    }
     emit currentPositionChanged();
 }
 
