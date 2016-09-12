@@ -79,7 +79,7 @@ bool Helper::addFolder(QString addPath, bool isTopFolder)
     nameFilters << "*.MDX";
 
     QMDXPlayer player;
-    QFileInfoList fileList = addFolderPath.entryInfoList(nameFilters, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDir::Name);
+    QFileInfoList fileList = addFolderPath.entryInfoList(nameFilters, QDir::AllDirs | QDir::Files | QDir::NoDotAndDotDot, QDir::Name | QDir::DirsLast);
 
     foreach(QFileInfo info, fileList){
         if(info.isDir()){
