@@ -144,14 +144,6 @@ bool QMDXPlayer::loadSong(bool renderWav,
         // MXDRVG_End()は別スレッドで呼び出す
         startRenderingThread();
     }
-    while(true){
-        // 10秒分のデータがレンダリングできたらUIに通知を送る
-        {
-            QMutexLocker l(&mutex_);
-            if(wavBuffer_.size() >= SAMPLE_RATE * std::min(duration_, 10.0f) * BYTES_PER_SAMPLE) break;
-        }
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-    }
     setIsSongLoaded(true);
     return true;
 }
