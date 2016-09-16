@@ -79,7 +79,7 @@ PlayerForm {
         onClicked:{
             console.log("currentPosition:", mdxPlayer.currentPosition);
             console.log("duration:", mdxPlayer.duration);
-            console.log("playList items:", playList.count)
+            console.log("playList items:", playList.count);
         }
     }
 }

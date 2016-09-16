@@ -4,12 +4,12 @@ import QtQuick.Controls 1.4
 Item {
     width: 400
     height: 400
-    property alias playListView: playListView
+    property alias listViewBody: listViewBody
 
     ScrollView{
         anchors.fill: parent
         ListView {
-            id: playListView
+            id: listViewBody
             anchors.fill: parent
             highlightFollowsCurrentItem: true
             highlightMoveDuration: 500
@@ -18,8 +18,6 @@ Item {
                 border.color: "red"
                 border.width: 3
             }
-            model: playList
-
         }
     }
 }

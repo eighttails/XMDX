@@ -60,7 +60,7 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     timer->setInterval(50);
     timer->start();
     connect(timer, &QTimer::timeout, this, &QMDXPlayer::writeAudioBuffer);
-    connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::stateChanged);
+    connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::onStateChanged);
     audioOutput_->setBufferSize(PLAY_SAMPLE_RATE);
 
     connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::titleChanged);
@@ -258,6 +258,15 @@ void QMDXPlayer::terminateRenderingThread()
         renderingThread_.reset();
         quitRenderingThread_ = false;
     }
+}
+
+void QMDXPlayer::onStateChanged(QAudio::State state)
+{
+    // 曲が最後まで処理されていたら終了通知を出す
+    if(state == QAudio::IdleState && wavIndex_ && wavIndex_ == wavBuffer_.size()){
+        emit songPlayFinished();
+    }
+    emit stateChanged();
 }
 
 void QMDXPlayer::renderingThread()

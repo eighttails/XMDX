@@ -12,6 +12,24 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Blue
 
+    Connections {
+        target: mdxPlayer
+        onSongPlayFinished: {
+            var shuffle = false; // TODO 設定から取得
+            var repeat = true; // TODO 設定から取得
+            if(shuffle){
+                //TODO シャッフル再生
+            } else {
+                if(repeat &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
+                    // リピート再生時はリストの最後まで行ったら先頭に戻る
+                    playListView.listViewBody.currentIndex = 0;
+                } else {
+                    playListView.listViewBody.incrementCurrentIndex();
+                }
+            }
+        }
+    }
+
     GridLayout {
         id: flow1
         anchors.fill: parent
@@ -27,9 +45,11 @@ ApplicationWindow {
         }
 
         PlayListView{
+            id: playListView
             visible:true
             Layout.fillWidth: true
             Layout.fillHeight: true
+            listViewBody.model: playList
         }
 
         Menu{

@@ -30,6 +30,7 @@ signals:
     void fileNameChanged();
     void durationChanged();
     void currentPositionChanged();
+    void songPlayFinished();
 
 public slots:
     // 曲をロードする。
@@ -69,6 +70,7 @@ private slots:
     void setIsSongLoaded(bool isSongLoaded);
     void startRenderingThread();
     void terminateRenderingThread();
+    void onStateChanged(QAudio::State state);
 private:
     // サウンドデータのレンダリングスレッド
     static std::atomic_bool quitRenderingThread_;
