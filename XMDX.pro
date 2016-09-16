@@ -47,7 +47,9 @@ DISTFILES += \
     icon/volume-high.svg \
     icon/volume-low.svg \
     icon/x.svg \
-    icon/ICON-LICENSE
+    icon/ICON-LICENSE \
+    android/AndroidManifest.xml \
+    android/res/values/libs.xml
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
@@ -71,3 +73,5 @@ HEADERS += \
     qmdxplayer.h \
     helper.h \
     playlistitem.h
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
