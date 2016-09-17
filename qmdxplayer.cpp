@@ -27,6 +27,10 @@ constexpr int SAMPLE_RATE = PLAY_SAMPLE_RATE;
 constexpr int filter_mode = 0;
 constexpr int AUDIO_BUF_SAMPLES = SAMPLE_RATE / 100; // 10ms
 
+//曲の最後に1秒間の無音区間を入れる
+//曲が短すぎる(1秒未満?)と終了を検知できないため、ダミーのデータを入れておく意味もある
+constexpr float POST_GAP = 1.0f;
+
 QMutex QMDXPlayer::mutex_(QMutex::Recursive);
 std::shared_ptr<std::thread> QMDXPlayer::renderingThread_;
 std::atomic_bool QMDXPlayer::quitRenderingThread_(false);
@@ -35,7 +39,7 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
     , isSongLoaded_(false)
     , duration_(0.0)
-    , maxSongDuration_(20*60)
+    , maxSongDuration_(20*60 - POST_GAP)
     , wavIndex_(0)
 {
     //実行時に出る警告の抑止
@@ -133,7 +137,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
         if (max_song_duration < song_duration) {
             song_duration = max_song_duration;
         }
-        duration_ = song_duration;
+        duration_ = song_duration + POST_GAP;
 
         if (!renderWav){
             MXDRVG_End();
@@ -155,7 +159,6 @@ bool QMDXPlayer::startPlay()
         if(audioOutput_->state() == QAudio::SuspendedState){
             audioOutput_->resume();
         } else {
-            wavIndex_ = 0;
             audioBuffer_ = audioOutput_->start();
         }
         writeAudioBuffer();
@@ -262,10 +265,15 @@ void QMDXPlayer::terminateRenderingThread()
 
 void QMDXPlayer::onStateChanged(QAudio::State state)
 {
-    // 曲が最後まで処理されていたら終了通知を出す
-    if(state == QAudio::IdleState && wavIndex_ && wavIndex_ == wavBuffer_.size()){
-        emit songPlayFinished();
+    bool isPlayFinished = false;
+    {
+        QMutexLocker l(&mutex_);
+        // 曲が最後まで処理されていたら終了通知を出す
+        if(state == QAudio::IdleState && wavIndex_ && wavIndex_ == wavBuffer_.size()){
+            isPlayFinished = true;
+        }
     }
+    if(isPlayFinished) emit songPlayFinished();
     emit stateChanged();
 }
 
@@ -302,6 +310,8 @@ void QMDXPlayer::renderingThread()
         QMutexLocker l(&mutex_);
         wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
     }
+    QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
+    wavBuffer_.append(postGap);
     MXDRVG_End();
 }
 
