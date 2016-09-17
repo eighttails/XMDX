@@ -32,6 +32,13 @@ ApplicationWindow {
     function stepBackward(){
         var shuffle = false; // TODO 設定から取得
         var repeat = true; // TODO 設定から取得
+
+        // 曲開始から5秒以上経っていたら、前の曲には戻らずに現在の曲を頭出し
+        if(mdxPlayer.currentPosition > 5) {
+            mdxPlayer.currentPosition = 0;
+            return;
+        }
+
         if(shuffle){
             //TODO シャッフル再生
         } else {
