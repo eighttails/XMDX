@@ -17,7 +17,7 @@ extern bool LoadMDX(const char *mdx_name, char *title, int title_len);
 
 extern MXDRVG_EXPORT int MXDRVG_GetFadeoutStart(void);
 
-constexpr size_t PLAY_SAMPLE_RATE = 44100;
+constexpr size_t PLAY_SAMPLE_RATE = 48000;
 constexpr int CHANNELS = 2;
 constexpr int SAMPLE_SIZE = 16;
 constexpr int BYTES_PER_SAMPLE = SAMPLE_SIZE / 8 * CHANNELS;
