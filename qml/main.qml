@@ -12,21 +12,42 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Blue
 
+    // 次の曲に移動
+    function stepForward(){
+        var shuffle = false; // TODO 設定から取得
+        var repeat = true; // TODO 設定から取得
+        if(shuffle){
+            //TODO シャッフル再生
+        } else {
+            if(repeat &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
+                // リピート再生時はリストの最後まで行ったら先頭に戻る
+                playListView.listViewBody.currentIndex = 0;
+            } else {
+                playListView.listViewBody.incrementCurrentIndex();
+            }
+        }
+    }
+
+    // 前の曲に戻る
+    function stepBackward(){
+        var shuffle = false; // TODO 設定から取得
+        var repeat = true; // TODO 設定から取得
+        if(shuffle){
+            //TODO シャッフル再生
+        } else {
+            if(repeat &&  playListView.listViewBody.currentIndex == 0){
+                // リピート再生時はリストの先頭まで行ったら末尾に戻る
+                playListView.listViewBody.currentIndex = playListView.listViewBody.count - 1;
+            } else {
+                playListView.listViewBody.decrementCurrentIndex();
+            }
+        }
+    }
+
     Connections {
         target: mdxPlayer
         onSongPlayFinished: {
-            var shuffle = false; // TODO 設定から取得
-            var repeat = true; // TODO 設定から取得
-            if(shuffle){
-                //TODO シャッフル再生
-            } else {
-                if(repeat &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
-                    // リピート再生時はリストの最後まで行ったら先頭に戻る
-                    playListView.listViewBody.currentIndex = 0;
-                } else {
-                    playListView.listViewBody.incrementCurrentIndex();
-                }
-            }
+            stepForward();
         }
     }
 
@@ -38,8 +59,18 @@ ApplicationWindow {
         Player{
             Layout.fillWidth: true
             buttonMenu {
-                onClicked:{
+                onClicked: {
                     mainMenu.open();
+                }
+            }
+            buttonBackward {
+                onClicked: {
+                    stepBackward();
+                }
+            }
+            buttonForward {
+                onClicked: {
+                    stepForward();
                 }
             }
         }
