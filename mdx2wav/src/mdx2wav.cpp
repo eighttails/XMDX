@@ -34,7 +34,7 @@ bool read_file(const char *name, int *fsize, u8 **fdata, int offset) {
   *fdata = 0;
   *fsize = 0;
 
-  int fd = open(name, O_RDONLY);
+  int fd = open(name, O_RDONLY | O_BINARY);
   if (fd == -1) {
     if (verbose) {
       fprintf(stderr, "cannot open %s\n", name);

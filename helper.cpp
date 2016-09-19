@@ -69,7 +69,7 @@ bool Helper::addFile(QString mdxFile)
 
 bool Helper::addFolder(QString addPath, bool isTopFolder)
 {
-    QDir addFolderPath(addPath);
+    QDir addFolderPath(QDir::toNativeSeparators(addPath));
     if(!addFolderPath.exists()){
         return false;
     }
@@ -84,6 +84,7 @@ bool Helper::addFolder(QString addPath, bool isTopFolder)
     foreach(QFileInfo info, fileList){
         if(info.isDir()){
             addFolder(addFolderPath.absolutePath() + QDir::separator() + info.fileName(), false);
+            continue;
         }
 
         if(!player.loadSong(false, info.absoluteFilePath(), "", 1, true)){
