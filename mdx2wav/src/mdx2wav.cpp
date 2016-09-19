@@ -33,8 +33,11 @@ void strcpy_cnv(char *dst, const char *src, int mode) {
 bool read_file(const char *name, int *fsize, u8 **fdata, int offset) {
   *fdata = 0;
   *fsize = 0;
-
+#ifdef WIN32
   int fd = open(name, O_RDONLY | O_BINARY);
+#else
+  int fd = open(name, O_RDONLY);
+#endif
   if (fd == -1) {
     if (verbose) {
       fprintf(stderr, "cannot open %s\n", name);
