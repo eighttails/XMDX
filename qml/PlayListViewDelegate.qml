@@ -9,7 +9,7 @@ PlayListViewDelegateForm {
 
     itemDelegate1 {
         onClicked: {
-            ListView.currentIndex = index;
+            listViewBody.currentIndex = index;
         }
     }
 

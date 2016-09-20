@@ -6,6 +6,7 @@ Item {
     id: item1
     width: 400
     height: 40
+
     property alias mdxFileName: mdxFileName
     property alias mdxTitle: mdxTitle
     property alias itemDelegate1: itemDelegate1
