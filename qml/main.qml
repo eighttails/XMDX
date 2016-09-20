@@ -84,7 +84,6 @@ ApplicationWindow {
 
         PlayListView{
             id: playListView
-            visible:true
             Layout.fillWidth: true
             Layout.fillHeight: true
             listViewBody.model: playList
