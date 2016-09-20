@@ -10,8 +10,6 @@ Item {
     property alias mdxTitle: mdxTitle
     property alias itemDelegate1: itemDelegate1
 
-
-
     ItemDelegate {
         id: itemDelegate1
         anchors.fill: parent
