@@ -277,43 +277,50 @@ void QMDXPlayer::onStateChanged(QAudio::State state)
 
 void QMDXPlayer::renderingThread()
 {
-    {
-        QMutexLocker l(&mutex_);
-        wavIndex_ = 0;
-        wavBuffer_.clear();
-        wavBuffer_.reserve(SAMPLE_RATE * duration_ * BYTES_PER_SAMPLE);
-    }
+	try{
+		{
+			QMutexLocker l(&mutex_);
+			wavIndex_ = 0;
+			wavBuffer_.clear();
+			wavBuffer_.reserve(SAMPLE_RATE * duration_ * BYTES_PER_SAMPLE);
+		}
 
-    short audio_buf[AUDIO_BUF_SAMPLES * 2];
-    for (int i = 0; duration_ == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < duration_; i++) {
-        if (quitRenderingThread_ || MXDRVG_GetTerminated()) {
-            break;
-        }
+		short audio_buf[AUDIO_BUF_SAMPLES * 2];
+		for (int i = 0; duration_ == 0.0f || 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE < duration_; i++) {
+			if (quitRenderingThread_ || MXDRVG_GetTerminated()) {
+				break;
+			}
 
-        float current = 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE;
-        float fadevol = 1.0;
-        if( doFadeout_ && duration_ - current < 10.0 ){
-            fadevol = (duration_ - current) / 10.0;
-        }
+			float current = 1.0f * i * AUDIO_BUF_SAMPLES / SAMPLE_RATE;
+			float fadevol = 1.0;
+			if( doFadeout_ && duration_ - current < 10.0 ){
+				fadevol = (duration_ - current) / 10.0;
+			}
 
-        int len = MXDRVG_GetPCM(audio_buf, AUDIO_BUF_SAMPLES);
-        if (len <= 0) {
-            break;
-        }
+			int len = MXDRVG_GetPCM(audio_buf, AUDIO_BUF_SAMPLES);
+			if (len <= 0) {
+				break;
+			}
 
-        for (int j = 0; j < len * 2; j++){
-            audio_buf[j] *= fadevol;
-        }
+			for (int j = 0; j < len * 2; j++){
+				audio_buf[j] *= fadevol;
+			}
 
-        QMutexLocker l(&mutex_);
-        wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
-    }
+			QMutexLocker l(&mutex_);
+			wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
+		}
 
-    {
-        QMutexLocker l(&mutex_);
-        QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
-        wavBuffer_.append(postGap);
-    }
+		{
+			QMutexLocker l(&mutex_);
+			QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
+			wavBuffer_.append(postGap);
+		}
+	} catch(const std::exception& e) {
+		qDebug() << "exception caught:" << e.what();
+	} catch(...) {
+		qDebug() << "unknown exception caught.";
+	}
+
     MXDRVG_End();
 }
 
