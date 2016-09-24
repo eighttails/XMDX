@@ -76,14 +76,14 @@ static X68K::DOWNSAMPLE DS;
 
 static UBYTE FAKEA6S0004[256];
 
-static ULONG D0;
-static ULONG D1;
-static ULONG D2;
-static ULONG D3;
-static ULONG D4;
-static ULONG D5;
-static ULONG D6;
-static ULONG D7;
+static UPTRLONG D0;
+static UPTRLONG D1;
+static UPTRLONG D2;
+static UPTRLONG D3;
+static UPTRLONG D4;
+static UPTRLONG D5;
+static UPTRLONG D6;
+static UPTRLONG D7;
 
 static UBYTE volatile *A0;
 static UBYTE volatile *A1;
@@ -314,13 +314,13 @@ MXDRVG_EXPORT
 void MXDRVG_End(
 	void
 ) {
-	if ( G.L001e34 ) {
-		free( (void*)G.L001e34 );
-		G.L001e34 = NULL;
+	if ( G.MDXBUF ) {
+		free( (void*)G.MDXBUF );
+		G.MDXBUF = NULL;
 	}
-	if ( G.L001e38 ) {
-		free( (void*)G.L001e38 );
-		G.L001e38 = NULL;
+	if ( G.PDXBUF ) {
+		free( (void*)G.PDXBUF );
+		G.PDXBUF = NULL;
 	}
 	if ( G.L001bac ) {
 		free( (void*)G.L001bac );
@@ -657,7 +657,7 @@ static void PCM8_SUB(
 
 	switch ( D0&0xfff0 ) {
 	  case 0x0000:
-		PCM8.Out(D0&0xff, (void *)A1, D1, D2);
+		PCM8.Out(D0&0xff, (void *)A1, (int)D1, (int)D2);
 		break;
 	  case 0x0100:
 		switch ( D0&0xffff ) {
@@ -708,7 +708,7 @@ static void OPM_SUB(
 static void ADPCMOUT(
 	void
 ) {
-	PCM8.Out(0, (void *)A1, D1+0x00ff0000, D2);
+	PCM8.Out(0, (void *)A1, (int)D1+0x00ff0000, (int)D2);
 }
 
 static void ADPCMMOD_STOP(
@@ -948,7 +948,7 @@ L_10:;
 static void L_10(
   void
 ) {
-	D0 = (ULONG)(&OPMBUF);
+	D0 = (UPTRLONG)(&OPMBUF);
 }
 
 
@@ -1087,7 +1087,7 @@ static void L0000dc(
   void
 ) {
 	UWORD volatile * a0_w;
-	ULONG d1,d2,d3,d4,d5,d6,d7;
+	UPTRLONG d1,d2,d3,d4,d5,d6,d7;
 	UBYTE volatile *a0,*a1,*a2,*a3,*a4,*a5,*a6;
 
 // L0000dc:;
@@ -1313,7 +1313,7 @@ static void L_18(
   void
 ) {
 	A0 = (UBYTE *)&MXDRVG_WORK_CHBUF_PCM[0];
-	D0 = (ULONG)A0;
+	D0 = (UPTRLONG)A0;
 }
 
 
@@ -1328,7 +1328,7 @@ static void L_19(
   void
 ) {
 	A0 = &G.L001bb4[0];
-	D0 = (ULONG)A0;
+	D0 = (UPTRLONG)A0;
 }
 
 
@@ -1358,7 +1358,7 @@ static void L000216(
 	ULONG volatile *a1_l;
 	ULONG volatile *a2_l;
 	ULONG t0;
-	ULONG d2,d3,d4;
+	UPTRLONG d2,d3,d4;
 	UBYTE volatile *a0,*a1,*a2;
 
 // L000216:;
@@ -1466,7 +1466,7 @@ L000266:;
 static void L_1B(
   void
 ) {
-	ULONG d1,d2,d3,d4,d5;
+	UPTRLONG d1,d2,d3,d4,d5;
 	UBYTE volatile *a0,*a1,*a2;
 	ULONG volatile *a0_l, *a1_l, *a2_l;
 	UWORD volatile *a1_w, *a2_w;
@@ -1619,7 +1619,7 @@ static void L_1C(
 ) {
 	UBYTE volatile *t0;
 	ULONG c0;
-	ULONG d1,d2,d3,d4,d5,d6,d7;
+	UPTRLONG d1,d2,d3,d4,d5,d6,d7;
 	UBYTE volatile *a0,*a1,*a2,*a3,*a4;
 	ULONG volatile *a1_l, *a2_l, *a3_l, *a4_l;
 	UWORD volatile *a1_w, *a2_w, *a3_w;
@@ -1655,7 +1655,7 @@ static void L_1C(
 	d1=D1, d2=D2, d3=D3, d4=D4, d5=D5, d6=D6, d7=D7, a0=A0, a1=A1, a2=A2, a3=A3, a4=A4;
 	L000216();
 	if ( (SLONG)D0 < 0 ) goto L000462;
-	D1 += (ULONG)A0;
+	D1 += (UPTRLONG)A0;
 	D1++;
 	D1 &= 0xfffffffe;
 	D3 = D1;
@@ -1665,11 +1665,11 @@ static void L_1C(
 	L000216();
 	if ( (SLONG)D0 < 0 ) goto L000462;
 	D3 += D1;
-	D1 += (ULONG)A0;
+	D1 += (UPTRLONG)A0;
 	D6 = D1;
 	D1 = D0;
 	D1 <<= 3;
-	D1 += (ULONG)A0;
+	D1 += (UPTRLONG)A0;
 	D4 = D1;
 	A2 -= D3;
 	if ( (SLONG)D3 < 0 ) goto L00045a;
@@ -1697,7 +1697,7 @@ L00032c:;
 	D3 = (ULONG)(-((SLONG)D3));
 	D1 = D3;
 	D3 <<= 3;
-	if ( (ULONG)A2 < D3 ) goto L00045a;
+	if ( (UPTRLONG)A2 < D3 ) goto L00045a;
 
 L000342:;
 /*
@@ -1721,7 +1721,7 @@ L000342:;
 	D3 <<= 3;
 	D3 += D7;
 	A4 = A0;
-	if ( (ULONG)A0 > D3 ) goto L00037a;
+	if ( (UPTRLONG)A0 > D3 ) goto L00037a;
 	D1 = D0;
 	D1 <<= 3;
 	if ( G.L001ba8 < D1 ) goto L00045e;
@@ -1787,13 +1787,13 @@ L00037a:;
 	L000216();
 	D2 = D0;
 	if ( (SLONG)D2 < 0 ) goto L000462;
-	D1 += (ULONG)A0;
+	D1 += (UPTRLONG)A0;
 	D1++;
 	D1 &= 0xfffffffe;
 	A2 = (UBYTE *)D1;
 	D1 += D5;
 	D0 <<= 3;
-	D0 += (ULONG)A0;
+	D0 += (UPTRLONG)A0;
 	D0 += D5;
 	A3 = (UBYTE *)D1;
 	A1 = A3;
@@ -1921,7 +1921,7 @@ L000416:;
 														subq.l  #1,d2
 														swap.w  d2
 */
-	A1 -= (ULONG)A0;
+	A1 -= (UPTRLONG)A0;
 	D1 = D5;
 	D0 = D2;
 	D0 <<= 3;
@@ -1985,7 +1985,7 @@ L000446:;
 	if ( (D2--) > 0 ) goto L000426;
 	D5 >>= 3;
 	D5--;
-	D0 = (ULONG)A1;
+	D0 = (UPTRLONG)A1;
 
 L000454:;
 /*
@@ -2035,7 +2035,7 @@ L000466:;
 static void L_1D(
   void
 ) {
-	ULONG d2, d3, d4;
+	UPTRLONG d2, d3, d4;
 
 // L_1D:;
 /*
@@ -2085,7 +2085,7 @@ static void L_1E(
 static void L000496(
   void
 ) {
-	ULONG d2, d3, d4;
+	UPTRLONG d2, d3, d4;
 
 // L000496:;
 /*
@@ -2234,7 +2234,7 @@ static void L000534(
 														clr.b   (L001e18)
 														clr.b   (L002230)
 														clr.b   (L002231)
-														movea.l L001e34(pc),a0
+														movea.l MDXBUF(pc),a0
 														move.l  (a0),(L002218)
 														move.l  $0004(a0),(L00221c)
 														bra     L00063e
@@ -2242,7 +2242,7 @@ static void L000534(
 	G.L001e18 = CLR;
 	G.L002230 = CLR;
 	G.L002231 = CLR;
-	A0 = G.L001e34;
+	A0 = G.MDXBUF;
 	G.L002218 = (UBYTE *)GETBLONG( A0 );
 	G.L00221c = (UBYTE *)GETBLONG( A0+4 );
 	L00063e();
@@ -2354,7 +2354,7 @@ L0005b2:;
 static void L_SETMDX(
   void
 ) {
-	ULONG d1;
+	UPTRLONG d1;
 	UBYTE volatile *a1;
 
 // L_SETMDX:;
@@ -2373,15 +2373,15 @@ static void L_SETMDX(
 L0005c4:;
 /*
 														lea.l   (L002230),a2
-														movea.l L001e34(pc),a0
+														movea.l MDXBUF(pc),a0
 														move.l  a0,(L002218)
-														move.l  (L002220),d0
+														move.l  (MDXSIZE),d0
 														bra     L0005f8
 */
 	A2 = &G.L002230;
-	A0 = G.L001e34;
+	A0 = G.MDXBUF;
 	G.L002218 = A0;
-	D0 = G.L002220;
+	D0 = G.MDXSIZE;
 	L0005f8();
 }
 
@@ -2391,7 +2391,7 @@ L0005c4:;
 static void L_SETPDX(
   void
 ) {
-	ULONG d1;
+	UPTRLONG d1;
 	UBYTE volatile *a1;
 
 // L_SETPDX:;
@@ -2410,14 +2410,14 @@ static void L_SETPDX(
 L0005e8:;
 /*
 														lea.l   (L002231),a2
-														movea.l L001e38(pc),a0
+														movea.l PDXBUF(pc),a0
 														move.l  a0,(L00221c)
-														move.l  (L002224),d0
+														move.l  (PDXSIZE),d0
 */
 	A2 = &G.L002231;
-	A0 = G.L001e38;
+	A0 = G.PDXBUF;
 	G.L00221c = A0;
-	D0 = G.L002224;
+	D0 = G.PDXSIZE;
 
 /*
 														; fall down
@@ -2431,7 +2431,7 @@ L0005e8:;
 static void L0005f8(
   void
 ) {
-	ULONG d1;
+	UPTRLONG d1;
 	UBYTE volatile *a0, *a1, *a2;
 	uint32_t volatile *a1_l, *a0_l;
 
@@ -3286,7 +3286,7 @@ L00096e:;
 */
 	if ( D1-- != 0 ) goto L000968;
 	A0 += GETBWORD( A0+6 );
-	D0 = (ULONG)A0;
+	D0 = (UPTRLONG)A0;
 }
 
 
@@ -3325,7 +3325,7 @@ L00098c:;
 */
 	if ( D1-- != 0 ) goto L000986;
 	A0 += GETBWORD( A0+6 );
-	D0 = (ULONG)A0;
+	D0 = (UPTRLONG)A0;
 }
 
 
@@ -3347,7 +3347,7 @@ static void L000998(
 static void L_OPMINT(
   void
 ) {
-	ULONG d0,d1,d2,d3,d4,d5,d6,d7;
+	UPTRLONG d0,d1,d2,d3,d4,d5,d6,d7;
 	UBYTE volatile *a0,*a1,*a2,*a3,*a4,*a5;
 	MXDRVG_WORK_CH volatile *a6;
 	UWORD volatile *a0_w;
@@ -4875,8 +4875,8 @@ static void L0010b4(
 */
 	D1 = A6->S0032;
 	A0 = A6->S0026;
-	if ( (ULONG)A0 < 0x05 ) {
-		Table[(ULONG)A0]();
+	if ( (UPTRLONG)A0 < 0x05 ) {
+		Table[(UPTRLONG)A0]();
 	}
 	MX_ABORT();
 
@@ -4923,7 +4923,7 @@ static void L0010d4(
 														move.w  $003c(a6),$003e(a6)
 														neg.l   $0032(a6)
 */
-	A6->S0036 = D1;
+	A6->S0036 = (ULONG)D1;
 	A6->S003e--;
 	if ( A6->S003e ) goto L0010e8;
 	A6->S003e = A6->S003c;
@@ -4982,7 +4982,7 @@ static void L001100(
 	if ( A6->S003e ) goto L001114;
 	L00117a();
 	D0 = (SWORD)D0 * (SWORD)D1;
-	A6->S0036 = D0;
+	A6->S0036 = (ULONG)D0;
 	A6->S003e = A6->S003c;
 
 L001114:;
@@ -5013,8 +5013,8 @@ static void L001116(
 */
 	D1 = A6->S0048;
 	A0 = A6->S0040;
-	if ( (ULONG)A0 < 0x05 ) {
-		Table[(ULONG)A0]();
+	if ( (UPTRLONG)A0 < 0x05 ) {
+		Table[(UPTRLONG)A0]();
 	}
 	MX_ABORT();
 }
@@ -5544,9 +5544,9 @@ L0012cc:;
 
 L0012d0:;
 // checker
-	if ( (ULONG)A0 >= ((ULONG)G.L001e34)+((ULONG)G.L002220) ) {
+	if ( (UPTRLONG)A0 >= ((UPTRLONG)G.MDXBUF)+((UPTRLONG)G.MDXSIZE) ) {
 //		G.FATALERROR = 0x0012d0;
-//		G.FATALERRORADR = (ULONG)A4;
+//		G.FATALERRORADR = (UPTRLONG)A4;
 		return;
 	}
 // checker end
@@ -5846,9 +5846,9 @@ static void L001376(
 
 L001396:;
 // checker
-	if ( (ULONG)(A4-D0) < (ULONG)G.L001e34 ) {
+	if ( (UPTRLONG)(A4-D0) < (UPTRLONG)G.MDXBUF ) {
 		G.FATALERROR = 0x001396;
-		G.FATALERRORADR = (ULONG)A4;
+		G.FATALERRORADR = (UPTRLONG)A4;
 		return;
 	}
 // checker end
@@ -5944,7 +5944,7 @@ static void L0013c6(
 	D0 = GETBWORD( A4 ); A4 += 2;
 	D0 = (SLONG)(SWORD)D0;
 	D0 <<= 8;
-	A6->S0008 = D0;
+	A6->S0008 = (ULONG)D0;
 	A6->S0016 |= 0x80;
 
 }
@@ -5984,9 +5984,9 @@ static void L0013e6(
 
 // L0013e6:;
 // checker
-	if ( (ULONG)(A4-D0) < (ULONG)G.L001e34 ) {
+	if ( (UPTRLONG)(A4-D0) < (UPTRLONG)G.MDXBUF ) {
 		G.FATALERROR = 0x0013e6;
-		G.FATALERRORADR = (ULONG)A4;
+		G.FATALERRORADR = (UPTRLONG)A4;
 		return;
 	}
 // checker end
@@ -6275,7 +6275,7 @@ L0014ee:;
 static void L0014fc(
 	void
 ) {
-	ULONG d1;
+	UPTRLONG d1;
 
 /*
 L001588:;
@@ -6353,7 +6353,7 @@ L001552:;
 														beq     L00155e
 														moveq.l #$00,d0
 */
-	A6->S002e = D0;
+	A6->S002e = (ULONG)D0;
 	if ( D1 == 0x02 ) goto L00155e;
 	D0 = 0;
 
@@ -6361,7 +6361,7 @@ L00155e:;
 /*
 														move.l  d0,$002a(a6)
 */
-	A6->S002a = D0;
+	A6->S002a = (ULONG)D0;
 
 L001562:;
 /*
@@ -6782,9 +6782,9 @@ L001706:;
 static void L00170e(
 	void
 ) {
-	ULONG d1;
+	UPTRLONG d1;
 	volatile MXDRVG_WORK_CH *a6;
-	ULONG d7;
+	UPTRLONG d7;
 	UBYTE volatile *a6s0000;
 
 // L00170e:;
@@ -7033,27 +7033,27 @@ static int Initialize(
 	int mdxbufsize,
 	int pdxbufsize
 ) {
-	G.L002220 = ( mdxbufsize ? mdxbufsize : 0x10000 );
-	G.L002224 = ( pdxbufsize ? pdxbufsize : 0x100000 );
+	G.MDXSIZE = ( mdxbufsize ? mdxbufsize : 0x10000 );
+	G.PDXSIZE = ( pdxbufsize ? pdxbufsize : 0x100000 );
 	G.L001ba8 = 0x600;
-	G.L001e34 = (UBYTE *)malloc( G.L002220 );
-	if ( !G.L001e34 ) {
+	G.MDXBUF = (UBYTE *)malloc( G.MDXSIZE );
+	if ( !G.MDXBUF ) {
 		return (!0);
 	}
-	memset( (void *)G.L001e34, 0, G.L002220 );
-	G.L001e38 = (UBYTE *)malloc( G.L002224 );
-	if ( !G.L001e38 ){
-		free( (void *)G.L001e34 );
-		G.L001e34 = NULL;
+	memset( (void *)G.MDXBUF, 0, G.MDXSIZE );
+	G.PDXBUF = (UBYTE *)malloc( G.PDXSIZE );
+	if ( !G.PDXBUF ){
+		free( (void *)G.MDXBUF );
+		G.MDXBUF = NULL;
 		return (!0);
 	}
-	memset( (void *)G.L001e38, 0, G.L002224 );
+	memset( (void *)G.PDXBUF, 0, G.PDXSIZE );
 	G.L001bac = (UBYTE *)malloc( G.L001ba8 );
 	if ( !G.L001bac ) {
-		free( (void *)G.L001e38 );
-		G.L001e38 = NULL;
-		free( (void *)G.L001e34 );
-		G.L001e34 = NULL;
+		free( (void *)G.PDXBUF );
+		G.PDXBUF = NULL;
+		free( (void *)G.MDXBUF );
+		G.MDXBUF = NULL;
 		return (!0);
 	}
 	memset( (void *)G.L001bac, 0, G.L001ba8 );
@@ -7073,19 +7073,19 @@ L0017ea:;
 		move.w  #$0001,(L001e12)
 		clr.l   (L001e08)
 		move.l  $0008(a0),(L001bb0)
-		move.l  #$00010000,(L002220)
-		move.l  #$0004e000,(L002224)
+		move.l  #$00010000,(MDXSIZE)
+		move.l  #$0004e000,(PDXSIZE)
 		move.l  #$00000600,(L001ba8)
 		clr.b   (L002230)
 		clr.b   (L002231)
 		addq.w  #1,a2
 		bsr     L001892
 		lea.l   L002248(pc),a4
-		lea.l   L001e34(pc),a1
+		lea.l   MDXBUF(pc),a1
 		move.l  a4,(a1)
-		adda.l  (L002220),a4
+		adda.l  (MDXSIZE),a4
 		move.l  a4,$0004(a1)
-		adda.l  (L002224),a4
+		adda.l  (PDXSIZE),a4
 		move.l  a4,(L001bac)
 		adda.l  (L001ba8),a4
 		cmpa.l  $0008(a0),a4
@@ -7163,7 +7163,7 @@ L0018e8:;
 		addq.w  #1,a2
 L0018fc:;
 		bsr     L001966
-		move.l  d0,(L002220)
+		move.l  d0,(MDXSIZE)
 		bra     L001892
 L001904:;
 		cmp.b   #$70,d0                 ;'p'
@@ -7173,7 +7173,7 @@ L001904:;
 		addq.w  #1,a2
 L001912:;
 		bsr     L001966
-		move.l  d0,(L002224)
+		move.l  d0,(PDXSIZE)
 		bra     L001892
 L00191c:;
 		cmp.b   #$62,d0                 ;'b'
@@ -7322,9 +7322,9 @@ L001e2c:;
 		.ds.l   1
 L001e30:;
 		.ds.l   1
-L001e34:;
+MDXBUF:;
 		.ds.l   1
-L001e38:;
+PDXBUF:;
 		.ds.l   1
 OPMBUF:;
 		.ds.b   256
