@@ -154,7 +154,6 @@ bool QMDXPlayer::loadSong(bool renderWav,
 
 bool QMDXPlayer::startPlay()
 {
-    QMutexLocker l(&mutex_);
     if(audioOutput_){
         if(audioOutput_->state() == QAudio::SuspendedState){
             audioOutput_->resume();
@@ -169,7 +168,6 @@ bool QMDXPlayer::startPlay()
 }
 bool QMDXPlayer::stopPlay()
 {
-    QMutexLocker l(&mutex_);
     if(audioOutput_){
         audioOutput_->suspend();
     } else {
@@ -310,8 +308,12 @@ void QMDXPlayer::renderingThread()
         QMutexLocker l(&mutex_);
         wavBuffer_.append(reinterpret_cast<char*>(audio_buf), len * BYTES_PER_SAMPLE);
     }
-    QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
-    wavBuffer_.append(postGap);
+
+    {
+        QMutexLocker l(&mutex_);
+        QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
+        wavBuffer_.append(postGap);
+    }
     MXDRVG_End();
 }
 
