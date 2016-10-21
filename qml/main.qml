@@ -5,6 +5,8 @@ import QtQuick.Layouts 1.1
 import QtMultimedia 5.6
 import QtQuick.Controls.Material 2.0
 
+import Qt.labs.settings 1.0
+
 ApplicationWindow {
     visible: true
     width: 320
@@ -12,14 +14,18 @@ ApplicationWindow {
     Material.theme: Material.Dark
     Material.accent: Material.Blue
 
+    Settings{
+        id:settings
+        property alias random: playerPanel.isRandomEnabled
+        property alias loop: playerPanel.isLoopEnabled
+    }
+
     // 次の曲に移動
     function stepForward(){
-        var shuffle = false; // TODO 設定から取得
-        var repeat = true; // TODO 設定から取得
-        if(shuffle){
+        if(settings.random){
             //TODO シャッフル再生
         } else {
-            if(repeat &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
+            if(settings.loop &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
                 // リピート再生時はリストの最後まで行ったら先頭に戻る
                 playListView.listViewBody.currentIndex = 0;
             } else {
@@ -30,19 +36,16 @@ ApplicationWindow {
 
     // 前の曲に戻る
     function stepBackward(){
-        var shuffle = false; // TODO 設定から取得
-        var repeat = true; // TODO 設定から取得
-
         // 曲開始から5秒以上経っていたら、前の曲には戻らずに現在の曲を頭出し
         if(mdxPlayer.currentPosition > 5) {
             mdxPlayer.currentPosition = 0;
             return;
         }
 
-        if(shuffle){
+        if(settings.random){
             //TODO シャッフル再生
         } else {
-            if(repeat &&  playListView.listViewBody.currentIndex == 0){
+            if(settings.loop &&  playListView.listViewBody.currentIndex == 0){
                 // リピート再生時はリストの先頭まで行ったら末尾に戻る
                 playListView.listViewBody.currentIndex = playListView.listViewBody.count - 1;
             } else {
@@ -64,6 +67,7 @@ ApplicationWindow {
         flow: width > height ? GridLayout.LeftToRight : GridLayout.TopToBottom
 
         Player{
+            id: playerPanel
             Layout.fillWidth: true
             buttonMenu {
                 onClicked: {

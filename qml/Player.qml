@@ -1,6 +1,9 @@
 import QtQuick 2.7
 
 PlayerForm {
+    property alias isLoopEnabled: buttonLoop.checked
+    property alias isRandomEnabled: buttonRandom.checked
+
     displayTitle {
         text: mdxPlayer.title
 
@@ -43,8 +46,10 @@ PlayerForm {
         }
     }
     buttonLoop {
-        onClicked:{
-        }
+        id:buttonLoop
+    }
+    buttonRandom {
+        id:buttonRandom
     }
 
     sliderPlayPosition {
