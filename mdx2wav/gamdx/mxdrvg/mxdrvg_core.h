@@ -31,6 +31,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <float.h>
+#include <algorithm>
 #include "mxdrvg.h"
 
 #include "opm_delegate.h"
@@ -4500,7 +4501,7 @@ L000ef4:;
 	D0 <<= 3;
 	A1 = G.L00222c;
 	A0 = A1+D0;
-	A1 += GETBLONG(A0); A0 += 4;
+	A1 += std::min((ULONG)G.PDXSIZE, (ULONG)GETBLONG(A0)); A0 += 4; // 破損PDXデコード時の範囲外アクセス回避
 	A0 += 2;
 	D3 = GETBWORD(A0); A0 += 2;
 	if ( D3 == 0x0000 ) goto L000f26;
