@@ -3,23 +3,25 @@
         <file>qml/main.qml</file>
         <file>qml/Player.qml</file>
         <file>qml/PlayerForm.ui.qml</file>
-        <file>icon/loop.svg</file>
-        <file>icon/media-pause.svg</file>
-        <file>icon/media-play.svg</file>
-        <file>icon/media-skip-backward.svg</file>
-        <file>icon/media-skip-forward.svg</file>
-        <file>icon/media-step-backward.svg</file>
-        <file>icon/media-step-forward.svg</file>
-        <file>icon/media-stop.svg</file>
-        <file>icon/menu.svg</file>
-        <file>icon/random.svg</file>
-        <file>icon/volume-high.svg</file>
-        <file>icon/volume-low.svg</file>
-        <file>icon/x.svg</file>
+        <file>icon/openiconic/loop.svg</file>
+        <file>icon/openiconic/media-pause.svg</file>
+        <file>icon/openiconic/media-play.svg</file>
+        <file>icon/openiconic/media-skip-backward.svg</file>
+        <file>icon/openiconic/media-skip-forward.svg</file>
+        <file>icon/openiconic/media-step-backward.svg</file>
+        <file>icon/openiconic/media-step-forward.svg</file>
+        <file>icon/openiconic/media-stop.svg</file>
+        <file>icon/openiconic/menu.svg</file>
+        <file>icon/openiconic/random.svg</file>
+        <file>icon/openiconic/volume-high.svg</file>
+        <file>icon/openiconic/volume-low.svg</file>
+        <file>icon/openiconic/x.svg</file>
         <file>qml/PlayListView.qml</file>
         <file>qml/PlayListViewForm.ui.qml</file>
         <file>qml/PlayListViewDelegate.qml</file>
         <file>qml/PlayListViewDelegateForm.ui.qml</file>
         <file>qml/PanelButton.qml</file>
+        <file>icon/XMDX.png</file>
+        <file>icon/XMDX.svg</file>
     </qresource>
 </RCC>

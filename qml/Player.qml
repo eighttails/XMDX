@@ -36,7 +36,7 @@ PlayerForm {
                               .arg(mdxPlayer.durationString)
 
     buttonPlay {
-        iconSource: mdxPlayer.isPlaying ? "qrc:/icon/media-pause.svg" : "qrc:/icon/media-play.svg"
+        iconSource: mdxPlayer.isPlaying ? "qrc:/icon/openiconic/media-pause.svg" : "qrc:/icon/openiconic/media-play.svg"
         onClicked:{
             if (mdxPlayer.isPlaying){
                 mdxPlayer.stopPlay();

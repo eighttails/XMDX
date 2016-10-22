@@ -34,22 +34,24 @@ DISTFILES += \
     mdx2wav/gamdx/downsample/lowpass_48.dat \
     mdx2wav/gamdx/fmgen/readme.txt \
     mdx2wav/LICENSE \
-    icon/loop.svg \
-    icon/media-pause.svg \
-    icon/media-play.svg \
-    icon/media-skip-backward.svg \
-    icon/media-skip-forward.svg \
-    icon/media-step-backward.svg \
-    icon/media-step-forward.svg \
-    icon/media-stop.svg \
-    icon/menu.svg \
-    icon/random.svg \
-    icon/volume-high.svg \
-    icon/volume-low.svg \
-    icon/x.svg \
-    icon/ICON-LICENSE \
+    icon/openiconic/loop.svg \
+    icon/openiconic/media-pause.svg \
+    icon/openiconic/media-play.svg \
+    icon/openiconic/media-skip-backward.svg \
+    icon/openiconic/media-skip-forward.svg \
+    icon/openiconic/media-step-backward.svg \
+    icon/openiconic/media-step-forward.svg \
+    icon/openiconic/media-stop.svg \
+    icon/openiconic/menu.svg \
+    icon/openiconic/random.svg \
+    icon/openiconic/volume-high.svg \
+    icon/openiconic/volume-low.svg \
+    icon/openiconic/x.svg \
+    icon/openiconic/ICON-LICENSE \
     android/AndroidManifest.xml \
-    android/res/values/libs.xml
+    android/res/values/libs.xml \
+    icon/XMDX.png \
+    icon/XMDX.svg
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \

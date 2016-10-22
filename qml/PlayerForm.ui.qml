@@ -115,30 +115,30 @@ Item {
 
             PanelButton {
                 id: buttonMenu
-                iconSource: "qrc:/icon/menu.svg"
+                iconSource: "qrc:/icon/openiconic/menu.svg"
             }
 
             PanelButton {
                 id: buttonRandom
                 checkable: true
-                iconSource: "qrc:/icon/random.svg"
+                iconSource: "qrc:/icon/openiconic/random.svg"
             }
             PanelButton {
                 id: buttonBackward
-                iconSource: "qrc:/icon/media-step-backward.svg"
+                iconSource: "qrc:/icon/openiconic/media-step-backward.svg"
             }
             PanelButton {
                 id: buttonPlay
-                iconSource: "qrc:/icon/media-play.svg"
+                iconSource: "qrc:/icon/openiconic/media-play.svg"
             }
             PanelButton {
                 id: buttonForward
-                iconSource: "qrc:/icon/media-step-forward.svg"
+                iconSource: "qrc:/icon/openiconic/media-step-forward.svg"
             }
             PanelButton {
                 id: buttonLoop
                 checkable: true
-                iconSource: "qrc:/icon/loop.svg"
+                iconSource: "qrc:/icon/openiconic/loop.svg"
             }
         }
 
