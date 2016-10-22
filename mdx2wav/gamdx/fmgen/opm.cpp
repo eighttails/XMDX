@@ -24,6 +24,8 @@ OPM::OPM()
 {
 	lfo_count_ = 0;
 	lfo_count_prev_ = ~0;
+        lfo_step_ = 0;
+        regtc = 0;
 	BuildLFOTable();
 	for (int i=0; i<8; i++)
 	{
