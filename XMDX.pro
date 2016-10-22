@@ -5,6 +5,9 @@ CONFIG += c++11
 android:{
 DEFINES += ALWAYSFULLSCREEN
 }
+win32:{
+RC_ICON = icon/XMDX.ico
+}
 
 SOURCES += main.cpp \
     mdx2wav/gamdx/downsample/downsample.cpp \
@@ -51,7 +54,8 @@ DISTFILES += \
     android/AndroidManifest.xml \
     android/res/values/libs.xml \
     icon/XMDX.png \
-    icon/XMDX.svg
+    icon/XMDX.svg \
+    icon/XMDX.ico
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
