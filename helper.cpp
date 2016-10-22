@@ -13,6 +13,7 @@ Helper::Helper(QQmlContext* rootContext, QList<QObject*>* playList, QObject *par
     : QObject(parent)
     , rootContext_(rootContext)
     , playList_(playList)
+    , randomPlayIndex_(0)
 {
     Q_ASSERT(rootContext);
     Q_ASSERT(playList);
@@ -28,7 +29,7 @@ void Helper::clearPlayList()
     notifyPlayListUpdated();
 }
 
-bool Helper::loadPlayList(QString playListName)
+bool Helper::loadPlayList(const QString& playListName)
 {
     QString loadPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     loadPlayList(loadPath, playListName);
@@ -36,7 +37,7 @@ bool Helper::loadPlayList(QString playListName)
     saveDefaultPlayList();
 }
 
-bool Helper::savePlayList(QString playListName)
+bool Helper::savePlayList(const QString& playListName)
 {
     QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
     savePlayList(savePath, playListName);
@@ -54,7 +55,7 @@ bool Helper::saveDefaultPlayList()
     savePlayList(savePath, "PlayList");
 }
 
-bool Helper::addFile(QString mdxFile)
+bool Helper::addFile(const QString& mdxFile)
 {
     QMDXPlayer player;
     if(!player.loadSong(false, mdxFile, "", 1, true)){
@@ -63,11 +64,12 @@ bool Helper::addFile(QString mdxFile)
     PlayListItem* item = new PlayListItem(player.title(), mdxFile);
     playList_->append(item);
     saveDefaultPlayList();
+    makeRandomPlayList();
     notifyPlayListUpdated();
     return true;
 }
 
-bool Helper::addFolder(QString addPath, bool isTopFolder)
+bool Helper::addFolder(const QString& addPath, bool isTopFolder)
 {
     QDir addFolderPath(QDir::toNativeSeparators(addPath));
     if(!addFolderPath.exists()){
@@ -96,6 +98,7 @@ bool Helper::addFolder(QString addPath, bool isTopFolder)
 
     if(isTopFolder){
         saveDefaultPlayList();
+        makeRandomPlayList();
         notifyPlayListUpdated();
     }
     return true;
@@ -146,6 +149,32 @@ QString Helper::addFolderDialog()
     return result;
 }
 
+int Helper::nextRandom(bool loop)
+{
+    if(++randomPlayIndex_ >= randomPlayList_.size()){
+        if(loop){
+            randomPlayIndex_ = 0;
+        } else {
+            // ループ再生でない場合、リストの終端に達したら-1を返す(停止する)
+            randomPlayIndex_ = randomPlayList_.size() - 1;
+            return -1;
+        }
+    }
+    return randomPlayList_.empty()
+            ? -1
+            : randomPlayList_[randomPlayIndex_];
+}
+
+int Helper::previousRandom(bool loop)
+{
+    if(--randomPlayIndex_ < 0){
+        randomPlayIndex_ = 0;
+    }
+    return randomPlayList_.empty()
+            ? -1
+            : randomPlayList_[randomPlayIndex_];
+}
+
 bool Helper::loadPlayList(QString path, QString playListName)
 {
     QString playListFileName = path + QDir::separator() + playListName;
@@ -163,6 +192,7 @@ bool Helper::loadPlayList(QString path, QString playListName)
         stream >> title >> fileName;
         playList_->append(new PlayListItem(title, fileName));
     }
+    makeRandomPlayList();
     notifyPlayListUpdated();
     return true;
 }
@@ -186,6 +216,16 @@ bool Helper::savePlayList(QString path, QString playListName)
         stream << playListItem->title() << playListItem->fileName();
     }
     return true;
+}
+
+void Helper::makeRandomPlayList()
+{
+    randomPlayList_.clear();
+    randomPlayIndex_ = 0;
+    for(int i = 0; i < playList_->size(); i++){
+        randomPlayList_.push_back(i);
+    }
+    std::random_shuffle(randomPlayList_.begin(), randomPlayList_.end());
 }
 
 void Helper::notifyPlayListUpdated()

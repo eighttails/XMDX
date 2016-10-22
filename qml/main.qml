@@ -23,10 +23,14 @@ ApplicationWindow {
     // 次の曲に移動
     function stepForward(){
         if(settings.random){
-            //TODO シャッフル再生
+            // ランダム再生
+            var index = appHelper.nextRandom(settings.loop);
+            if( index >= 0){
+                playListView.listViewBody.currentIndex = index;
+            }
         } else {
             if(settings.loop &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
-                // リピート再生時はリストの最後まで行ったら先頭に戻る
+                // ループ再生時はリストの最後まで行ったら先頭に戻る
                 playListView.listViewBody.currentIndex = 0;
             } else {
                 playListView.listViewBody.incrementCurrentIndex();
@@ -43,10 +47,14 @@ ApplicationWindow {
         }
 
         if(settings.random){
-            //TODO シャッフル再生
+            // ランダム再生
+            var index = appHelper.previousRandom(settings.loop);
+            if( index >= 0){
+                playListView.listViewBody.currentIndex = index;
+            }
         } else {
             if(settings.loop &&  playListView.listViewBody.currentIndex == 0){
-                // リピート再生時はリストの先頭まで行ったら末尾に戻る
+                // ループ再生時はリストの先頭まで行ったら末尾に戻る
                 playListView.listViewBody.currentIndex = playListView.listViewBody.count - 1;
             } else {
                 playListView.listViewBody.decrementCurrentIndex();
