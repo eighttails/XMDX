@@ -5,6 +5,9 @@
 #include <QFileDialog>
 #include <QGuiApplication>
 
+#include <algorithm>
+#include <random>
+
 #include "helper.h"
 #include "playlistitem.h"
 #include "qmdxplayer.h"
@@ -225,7 +228,7 @@ void Helper::makeRandomPlayList()
     for(int i = 0; i < playList_->size(); i++){
         randomPlayList_.push_back(i);
     }
-    std::random_shuffle(randomPlayList_.begin(), randomPlayList_.end());
+    std::shuffle(randomPlayList_.begin(), randomPlayList_.end(), std::random_device());
 }
 
 void Helper::notifyPlayListUpdated()
