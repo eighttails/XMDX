@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QIcon>
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -11,6 +12,8 @@ int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QApplication app(argc, argv);
+    QApplication::setWindowIcon(QIcon(":/icon/XMDX.png"));
+
     QQuickStyle::setStyle("Material");
 
     QQmlApplicationEngine engine;
