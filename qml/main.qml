@@ -64,6 +64,10 @@ ApplicationWindow {
 
     Connections {
         target: mdxPlayer
+        onTitleChanged:{
+            notificationClient.notification = mdxPlayer.title
+        }
+
         onSongPlayFinished: {
             stepForward();
         }
@@ -73,7 +77,6 @@ ApplicationWindow {
         id: flow1
         anchors.fill: parent
         flow: width > height ? GridLayout.LeftToRight : GridLayout.TopToBottom
-
         Player{
             id: playerPanel
             Layout.fillWidth: true

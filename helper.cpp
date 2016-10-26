@@ -230,7 +230,6 @@ void Helper::makeRandomPlayList()
     }
     std::shuffle(randomPlayList_.begin(), randomPlayList_.end(), std::random_device());
 }
-
 void Helper::notifyPlayListUpdated()
 {
     rootContext_->setContextProperty("playList", QVariant::fromValue(*playList_));

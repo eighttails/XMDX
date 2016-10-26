@@ -8,6 +8,10 @@
 #include "helper.h"
 #include "playlistitem.h"
 
+#ifdef Q_OS_ANDROID
+#include "notificationclient.h"
+#endif
+
 int main(int argc, char *argv[])
 {
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
@@ -26,6 +30,11 @@ int main(int argc, char *argv[])
 
     Helper helper(engine.rootContext(), &playList);
     engine.rootContext()->setContextProperty("appHelper", &helper);
+
+#ifdef Q_OS_ANDROID
+    NotificationClient *notificationClient = new NotificationClient(&engine);
+    engine.rootContext()->setContextProperty(QLatin1String("notificationClient"), notificationClient);
+#endif
 
     // デフォルトのプレイリストをロード
     helper.loadDefaultPlaylist();

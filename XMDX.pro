@@ -55,7 +55,10 @@ DISTFILES += \
     android/res/values/libs.xml \
     icon/XMDX.png \
     icon/XMDX.svg \
-    icon/XMDX.ico
+    icon/XMDX.ico \
+    android/src/org/eighttails/xmdx/NotificationClient.java \
+    android/res/drawable/icon.png \
+    android/res/drawable-ldpi/icon.png
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
@@ -79,5 +82,14 @@ HEADERS += \
     qmdxplayer.h \
     helper.h \
     playlistitem.h
+
+android:{
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+QT+= androidextras
+SOURCES +=  \
+    notificationclient.cpp
+HEADERS += \
+    notificationclient.h
+}
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
