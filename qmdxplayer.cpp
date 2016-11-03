@@ -1,3 +1,6 @@
+#include <signal.h>
+#include <exception>
+
 #include <QDebug>
 #include <QBuffer>
 #include <QProcessEnvironment>
@@ -34,6 +37,22 @@ constexpr float POST_GAP = 1.0f;
 QMutex QMDXPlayer::mutex_(QMutex::Recursive);
 std::shared_ptr<std::thread> QMDXPlayer::renderingThread_;
 std::atomic_bool QMDXPlayer::quitRenderingThread_(false);
+
+// MXDRG内部で発生したSIGSEGVを無理やりcatchしてクラッシュを回避する。
+class MXDRVException : public std::exception
+{
+public:
+    const char* what() const noexcept override
+    {
+        return "segfault in MXDRV";
+    }
+};
+
+void onMXDRVSegFault(int param)
+{
+    throw MXDRVException();
+}
+
 
 QMDXPlayer::QMDXPlayer(QObject *parent)
     : QObject(parent)
@@ -278,6 +297,9 @@ void QMDXPlayer::onStateChanged(QAudio::State state)
 void QMDXPlayer::renderingThread()
 {
 	try{
+        // MXDRG内部で発生したSIGSEGVを無理やりcatchしてクラッシュを回避する。
+        signal(SIGSEGV, onMXDRVSegFault);
+
 		{
 			QMutexLocker l(&mutex_);
 			wavIndex_ = 0;
@@ -315,11 +337,16 @@ void QMDXPlayer::renderingThread()
 			QByteArray postGap(int(POST_GAP * SAMPLE_RATE * BYTES_PER_SAMPLE), 0);
 			wavBuffer_.append(postGap);
 		}
-	} catch(const std::exception& e) {
-		qDebug() << "exception caught:" << e.what();
-	} catch(...) {
-		qDebug() << "unknown exception caught.";
-	}
+    } catch(const MXDRVException& e) {
+        qDebug() << "exception caught:" << e.what();
+        // 例外が発生したら強制的に再生を終了して次の曲へ
+        emit songPlayFinished();
+        emit stateChanged();
+    } catch(const std::exception& e) {
+        qDebug() << "exception caught:" << e.what();
+    }catch(...) {
+        qDebug() << "unknown exception caught.";
+    }
 
     MXDRVG_End();
 }
