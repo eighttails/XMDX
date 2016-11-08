@@ -9,7 +9,7 @@
 #include "playlistitem.h"
 
 #ifdef Q_OS_ANDROID
-#include "notificationclient.h"
+#include "playerservice.h"
 #endif
 
 int main(int argc, char *argv[])
@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
 	engine.rootContext()->setContextProperty("appHelper", &helper);
 
 #ifdef Q_OS_ANDROID
-	NotificationClient *notificationClient = new NotificationClient(&engine);
-	engine.rootContext()->setContextProperty(QLatin1String("notificationClient"), notificationClient);
+	PlayerService playerService(&engine);
+	engine.rootContext()->setContextProperty(QLatin1String("playerService"), &playerService);
 #endif
 
 	// デフォルトのプレイリストをロード

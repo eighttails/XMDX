@@ -65,7 +65,7 @@ ApplicationWindow {
     Connections {
         target: mdxPlayer
         onTitleChanged:{
-            notificationClient.notification = mdxPlayer.title
+            playerService.notification = mdxPlayer.title
         }
 
         onSongPlayFinished: {

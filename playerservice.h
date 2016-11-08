@@ -48,33 +48,29 @@
 **
 ****************************************************************************/
 
-package org.eighttails.xmdx;
+#ifndef PlayerService_H
+#define PlayerService_H
 
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.content.Context;
+#include <QObject>
 
-public class NotificationClient extends org.qtproject.qt5.android.bindings.QtActivity
+class PlayerService : public QObject
 {
-    private static NotificationManager m_notificationManager;
-    private static Notification.Builder m_builder;
-    private static NotificationClient m_instance;
+	Q_OBJECT
+	Q_PROPERTY(QString notification READ notification WRITE setNotification NOTIFY notificationChanged)
+public:
+	explicit PlayerService(QObject *parent = 0);
 
-    public NotificationClient()
-    {
-        m_instance = this;
-    }
+	void setNotification(const QString &notification);
+	QString notification() const;
 
-    public static void notify(String s)
-    {
-        if (m_notificationManager == null) {
-            m_notificationManager = (NotificationManager)m_instance.getSystemService(Context.NOTIFICATION_SERVICE);
-            m_builder = new Notification.Builder(m_instance);
-            m_builder.setSmallIcon(R.drawable.icon);
-            m_builder.setContentTitle("XMDX");
-        }
+signals:
+	void notificationChanged();
 
-        m_builder.setContentText(s);
-        m_notificationManager.notify(1, m_builder.build());
-    }
-}
+private slots:
+	void updateAndroidNotification();
+
+private:
+	QString m_notification;
+};
+
+#endif // PlayerService_H

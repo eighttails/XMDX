@@ -48,17 +48,17 @@
 **
 ****************************************************************************/
 
-#include "notificationclient.h"
+#include "playerservice.h"
 
 #include <QtAndroidExtras/QAndroidJniObject>
 
-NotificationClient::NotificationClient(QObject *parent)
+PlayerService::PlayerService(QObject *parent)
 	: QObject(parent)
 {
 	connect(this, SIGNAL(notificationChanged()), this, SLOT(updateAndroidNotification()));
 }
 
-void NotificationClient::setNotification(const QString &notification)
+void PlayerService::setNotification(const QString &notification)
 {
 	if (m_notification == notification)
 		return;
@@ -67,15 +67,15 @@ void NotificationClient::setNotification(const QString &notification)
 	emit notificationChanged();
 }
 
-QString NotificationClient::notification() const
+QString PlayerService::notification() const
 {
 	return m_notification;
 }
 
-void NotificationClient::updateAndroidNotification()
+void PlayerService::updateAndroidNotification()
 {
 	QAndroidJniObject javaNotification = QAndroidJniObject::fromString(m_notification);
-	QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/NotificationClient",
+	QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/PlayerService",
 											  "notify",
 											  "(Ljava/lang/String;)V",
 											  javaNotification.object<jstring>());
