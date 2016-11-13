@@ -13,7 +13,7 @@ class QMDXPlayer : public QObject
 	Q_PROPERTY(QString title READ title NOTIFY titleChanged)
 	Q_PROPERTY(QString fileName READ fileName NOTIFY fileNameChanged)
 	Q_PROPERTY(float duration READ duration NOTIFY durationChanged)
-	Q_PROPERTY(QString durationString READ durationString NOTIFY durationChanged)
+	Q_PROPERTY(QString durationString READ durationString NOTIFY durationStringChanged)
 	Q_PROPERTY(float currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged)
 	Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionChanged)
 	Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
@@ -25,11 +25,12 @@ public:
 	~QMDXPlayer() override;
 signals:
 	void stateChanged();
-	void isSongLoadedChanged();
-	void titleChanged();
-	void fileNameChanged();
-	void durationChanged();
-	void currentPositionChanged();
+	void isSongLoadedChanged(bool isSongLoaded);
+	void titleChanged(QString title);
+	void fileNameChanged(QString fileName);
+	void durationChanged(float duration);
+	void durationStringChanged(QString duration);
+	void currentPositionChanged(float currentPosition);
 	void songPlayFinished();
 
 public slots:
@@ -65,13 +66,14 @@ public:
 	// 曲がロードされているかどうか取得
 	bool isSongLoaded();
 
-private slots:
+protected slots:
 	void writeAudioBuffer();
 	void setIsSongLoaded(bool isSongLoaded);
 	void startRenderingThread();
 	void terminateRenderingThread();
 	void onStateChanged(QAudio::State state);
-private:
+
+protected:
 	// サウンドデータのレンダリングスレッド
 	static std::atomic_bool quitRenderingThread_;
 	static std::shared_ptr<std::thread> renderingThread_;

@@ -4,7 +4,17 @@ CONFIG += c++11
 
 android:{
 DEFINES += ALWAYSFULLSCREEN
+REPC_REPLICA += qmdxplayer.rep
+REPC_SOURCE += pingpong.rep
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+QT+= androidextras
+SOURCES +=  \
+    PlayerService.cpp
+HEADERS += \
+    PlayerService.h
 }
+
 win32:{
 RC_ICON = icon/XMDX.ico
 }
@@ -83,13 +93,5 @@ HEADERS += \
     helper.h \
     playlistitem.h
 
-android:{
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-QT+= androidextras
-SOURCES +=  \
-    PlayerService.cpp
-HEADERS += \
-    PlayerService.h
-}
 
-ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+

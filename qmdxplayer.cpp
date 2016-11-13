@@ -86,9 +86,10 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 	connect(audioOutput_.data(), &QAudioOutput::stateChanged, this, &QMDXPlayer::onStateChanged);
 	audioOutput_->setBufferSize(PLAY_SAMPLE_RATE);
 
-	connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::titleChanged);
-	connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::fileNameChanged);
-	connect(this, &QMDXPlayer::isSongLoadedChanged, this, &QMDXPlayer::durationChanged);
+	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit titleChanged(title_);});
+	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit fileNameChanged(fileName_);});
+	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationChanged(duration_);});
+	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationStringChanged(durationString());});
 }
 
 QMDXPlayer::~QMDXPlayer()
@@ -206,7 +207,7 @@ bool QMDXPlayer::setCurrentPosition(float position)
 	if(index > wavBuffer_.size()) return false;
 
 	wavIndex_ = index;
-	emit currentPositionChanged();
+	emit currentPositionChanged(currentPosition());
 	return true;
 }
 
@@ -259,7 +260,7 @@ bool QMDXPlayer::isSongLoaded()
 void QMDXPlayer::setIsSongLoaded(bool isSongLoaded)
 {
 	isSongLoaded_ = isSongLoaded;
-	emit isSongLoadedChanged();
+	emit isSongLoadedChanged(isSongLoaded_);
 }
 
 void QMDXPlayer::startRenderingThread()
@@ -359,6 +360,6 @@ void QMDXPlayer::writeAudioBuffer()
 		qint64 wrote = audioBuffer_->write(&wavBuffer_.data()[wavIndex_], wavBuffer_.size() - wavIndex_);
 		wavIndex_ += wrote;
 	}
-	emit currentPositionChanged();
+	emit currentPositionChanged(currentPosition());
 }
 
