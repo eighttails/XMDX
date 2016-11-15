@@ -89,7 +89,8 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit titleChanged(title_);});
 	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit fileNameChanged(fileName_);});
 	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationChanged(duration_);});
-	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationStringChanged(durationString());});
+	connect(this, &QMDXPlayer::durationChanged, [this]{emit durationStringChanged(durationString());});
+	connect(this, &QMDXPlayer::currentPositionChanged, [this]{emit currentPositionStringChanged(currentPositionString());});
 }
 
 QMDXPlayer::~QMDXPlayer()
@@ -292,7 +293,7 @@ void QMDXPlayer::onStateChanged(QAudio::State state)
 		}
 	}
 	if(isPlayFinished) emit songPlayFinished();
-	emit stateChanged();
+	emit isPlayingChanged(isPlaying());
 }
 
 void QMDXPlayer::renderingThread()
@@ -342,7 +343,7 @@ void QMDXPlayer::renderingThread()
 		qDebug() << "exception caught:" << e.what();
 		// 例外が発生したら強制的に再生を終了して次の曲へ
 		emit songPlayFinished();
-		emit stateChanged();
+		emit isPlayingChanged(isPlaying());
 	} catch(const std::exception& e) {
 		qDebug() << "exception caught:" << e.what();
 	}catch(...) {

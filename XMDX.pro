@@ -3,16 +3,19 @@ QT += qml quick quickcontrols2 widgets multimedia svg
 CONFIG += c++11
 
 android:{
-DEFINES += ALWAYSFULLSCREEN
-REPC_REPLICA += qmdxplayer.rep
-REPC_SOURCE += pingpong.rep
+QT+= androidextras remoteobjects
 
+REPC_REPLICA += qmdxplayer.rep
+REPC_SOURCE += qmdxplayer.rep
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
-QT+= androidextras
+
+DEFINES += ALWAYSFULLSCREEN
 SOURCES +=  \
-    PlayerService.cpp
+    PlayerService.cpp \
+    qmdxplayerclientproxy.cpp
 HEADERS += \
-    PlayerService.h
+    PlayerService.h \
+    qmdxplayerclientproxy.h
 }
 
 win32:{
@@ -68,7 +71,8 @@ DISTFILES += \
     icon/XMDX.ico \
     android/res/drawable/icon.png \
     android/res/drawable-ldpi/icon.png \
-    android/src/org/eighttails/xmdx/PlayerService.java
+    android/src/org/eighttails/xmdx/PlayerService.java \
+    qmdxplayer.rep
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
@@ -92,6 +96,5 @@ HEADERS += \
     qmdxplayer.h \
     helper.h \
     playlistitem.h
-
 
 

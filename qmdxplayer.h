@@ -15,56 +15,56 @@ class QMDXPlayer : public QObject
 	Q_PROPERTY(float duration READ duration NOTIFY durationChanged)
 	Q_PROPERTY(QString durationString READ durationString NOTIFY durationStringChanged)
 	Q_PROPERTY(float currentPosition READ currentPosition WRITE setCurrentPosition NOTIFY currentPositionChanged)
-	Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionChanged)
-	Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY stateChanged)
+	Q_PROPERTY(QString currentPositionString READ currentPositionString NOTIFY currentPositionStringChanged)
+	Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY isPlayingChanged)
 	Q_PROPERTY(bool isSongLoaded READ isSongLoaded NOTIFY isSongLoadedChanged)
-
-
 public:
 	explicit QMDXPlayer(QObject *parent = 0);
 	~QMDXPlayer() override;
+
 signals:
-	void stateChanged();
+	void isPlayingChanged(bool isPlaying);
 	void isSongLoadedChanged(bool isSongLoaded);
 	void titleChanged(QString title);
 	void fileNameChanged(QString fileName);
 	void durationChanged(float duration);
 	void durationStringChanged(QString duration);
 	void currentPositionChanged(float currentPosition);
+	void currentPositionStringChanged(QString currentPosition);
 	void songPlayFinished();
 
 public slots:
 	// 曲をロードする。
 	// 演奏せずにファイル情報を取得するだけの場合はrenderWavをfalseにする。
-	bool loadSong(bool renderWav,
+	virtual bool loadSong(bool renderWav,
 				  const QString& fileName,
 				  const QString& pdxPath,
 				  unsigned loops,
 				  bool enableFadeout);
 	// 演奏開始
-	bool startPlay();
+	virtual bool startPlay();
 	// 演奏中断
-	bool stopPlay();
+	virtual bool stopPlay();
 	// 曲中のシーク(引数は曲頭からの秒数)
-	bool setCurrentPosition(float position);
+	virtual bool setCurrentPosition(float position);
 
 public:
 	// 曲名を取得
-	QString title();
+	virtual QString title();
 	// ファイル名を取得
-	QString fileName();
+	virtual QString fileName();
 	// 曲長(秒)を取得
-	float duration();
+	virtual float duration();
 	// 曲長(秒)をmm:ssフォーマットで取得
-	QString durationString();
+	virtual QString durationString();
 	// 演奏中の位置(秒)を取得
-	float currentPosition();
+	virtual float currentPosition();
 	// 演奏中の位置(秒)をmm:ssフォーマットで取得
-	QString currentPositionString();
+	virtual QString currentPositionString();
 	// 演奏中かどうか取得
-	bool isPlaying();
+	virtual bool isPlaying();
 	// 曲がロードされているかどうか取得
-	bool isSongLoaded();
+	virtual bool isSongLoaded();
 
 protected slots:
 	void writeAudioBuffer();

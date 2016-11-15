@@ -53,6 +53,7 @@ package org.eighttails.xmdx;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 
 public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
 {
@@ -63,6 +64,10 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
     public PlayerService()
     {
         m_instance = this;
+    }
+
+    public static void startPlayerService(Context ctx) {
+        ctx.startService(new Intent(ctx, PlayerService.class));
     }
 
     public static void notify(String s)

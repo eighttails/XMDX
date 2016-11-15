@@ -1,0 +1,22 @@
+class QMDXPlayer
+{
+    SIGNAL(isPlayingChanged(bool isPlaying));
+    SIGNAL(isSongLoadedChanged(bool isSongLoaded));
+    SIGNAL(titleChanged(QString title));
+    SIGNAL(fileNameChanged(QString fileName));
+    SIGNAL(durationChanged(float duration));
+    SIGNAL(durationStringChanged(QString duration));
+    SIGNAL(currentPositionChanged(float currentPosition));
+    SIGNAL(currentPositionStringChanged(QString currentPosition));
+    SIGNAL(songPlayFinished());
+
+    // 曲をロードする。
+    // 演奏せずにファイル情報を取得するだけの場合はrenderWavをfalseにする。
+    SLOT(bool loadSong(bool renderWav, const QString& fileName, const QString& pdxPath, unsigned loops, bool enableFadeout));
+    // 演奏開始
+    SLOT(bool startPlay());
+    // 演奏中断
+    SLOT(bool stopPlay());
+    // 曲中のシーク(引数は曲頭からの秒数)
+    SLOT(bool setCurrentPosition(float position));
+}
