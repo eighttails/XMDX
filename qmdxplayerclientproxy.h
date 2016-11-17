@@ -2,12 +2,12 @@
 #define QMDXPLAYERCLIENTPROXY_H
 
 #include "qmdxplayer.h"
+#include "rep_qmdxplayer_replica.h"
 
-class QMDXPlayerReplica;
 class QMDXPlayerClientProxy : public QMDXPlayer
 {
 public:
-	QMDXPlayerClientProxy(QMDXPlayerReplica* replica);
+	QMDXPlayerClientProxy(QObject *parent = 0);
 
 public slots:
 	// 曲をロードする。
@@ -49,7 +49,7 @@ protected slots:
 	virtual void setIsSongLoaded(bool isSongLoaded);
 
 protected:
-	QMDXPlayerReplica* replica_;
+	QMDXPlayerReplica replica_;
 
 	float currentPosition_;
 	QString currentPositionString_;

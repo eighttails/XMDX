@@ -64,10 +64,6 @@ ApplicationWindow {
 
     Connections {
         target: mdxPlayer
-        onTitleChanged:{
-            playerService.notification = mdxPlayer.title
-        }
-
         onSongPlayFinished: {
             stepForward();
         }
