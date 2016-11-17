@@ -7,11 +7,11 @@
 #include <QQmlContext>
 #include "playlistitem.h"
 
-class Helper : public QObject
+class PlaylistManager : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Helper(QQmlContext* rootContext, QList<QObject*>* playList, QObject *parent = 0);
+	explicit PlaylistManager(QQmlContext* rootContext, QObject *parent = 0);
 	Q_INVOKABLE QString fileNameFromPath(const QString & filePath) const {
 		return QFileInfo(filePath).fileName();
 	}
@@ -50,7 +50,7 @@ private:
 
 	void notifyPlayListUpdated();
 	QQmlContext* rootContext_;
-	QList<QObject*>* playList_;
+	QList<QObject*> playList_;
 
 	// ランダム再生用の
 	std::vector<int> randomPlayList_;

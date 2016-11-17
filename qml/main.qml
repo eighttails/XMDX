@@ -24,7 +24,7 @@ ApplicationWindow {
     function stepForward(){
         if(settings.random){
             // ランダム再生
-            var index = appHelper.nextRandom(settings.loop);
+            var index = playlistManager.nextRandom(settings.loop);
             if( index >= 0){
                 playListView.listViewBody.currentIndex = index;
             }
@@ -48,7 +48,7 @@ ApplicationWindow {
 
         if(settings.random){
             // ランダム再生
-            var index = appHelper.previousRandom(settings.loop);
+            var index = playlistManager.previousRandom(settings.loop);
             if( index >= 0){
                 playListView.listViewBody.currentIndex = index;
             }
@@ -107,16 +107,16 @@ ApplicationWindow {
                 id: menuNewPlayList
                 text: "新規プレイリスト"
                 onTriggered: {
-                    appHelper.clearPlayList();
+                    playlistManager.clearPlayList();
                 }
             }
             MenuItem{
                 id: menuAddFile
                 text: "ファイルを追加..."
                 onTriggered: {
-                    var mdxFile = appHelper.addFileDialog();
+                    var mdxFile = playlistManager.addFileDialog();
                     if (mdxFile.localeCompare("") !== 0){
-                        appHelper.addFile(mdxFile);
+                        playlistManager.addFile(mdxFile);
                     }
                 }
             }
@@ -124,9 +124,9 @@ ApplicationWindow {
                 id: menuAddFolder
                 text: "フォルダを追加..."
                 onTriggered: {
-                    var folder = appHelper.addFolderDialog();
+                    var folder = playlistManager.addFolderDialog();
                     if (folder.localeCompare("") !== 0){
-                        appHelper.addFolder(folder);
+                        playlistManager.addFolder(folder);
                     }
                 }
             }

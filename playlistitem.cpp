@@ -1,33 +1,33 @@
 #include "playlistitem.h"
 
-PlayListItem::PlayListItem(QObject *parent) : QObject(parent)
+PlaylistItem::PlaylistItem(QObject *parent) : QObject(parent)
 {
 
 }
 
-PlayListItem::PlayListItem(QString title, QString fileName)
+PlaylistItem::PlaylistItem(QString title, QString fileName)
 	: title_(title), fileName_(fileName)
 {
 
 }
 
-QString PlayListItem::title()
+QString PlaylistItem::title()
 {
 	return title_;
 }
 
-QString PlayListItem::fileName()
+QString PlaylistItem::fileName()
 {
 	return fileName_;
 }
 
-void PlayListItem::setTitle(QString title)
+void PlaylistItem::setTitle(QString title)
 {
 	title_ = title;
 	emit titleChanged();
 }
 
-void PlayListItem::setFileName(QString fileName)
+void PlaylistItem::setFileName(QString fileName)
 {
 	fileName_ = fileName;
 	emit fileNameChanged();

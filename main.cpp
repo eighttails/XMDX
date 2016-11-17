@@ -5,7 +5,7 @@
 #include <QQmlContext>
 #include <QQuickStyle>
 #include "qmdxplayer.h"
-#include "helper.h"
+#include "playlistmanager.h"
 #include "playlistitem.h"
 
 #ifdef Q_OS_ANDROID
@@ -13,7 +13,7 @@
 #include "playerservice.h"
 void initService()
 {
-PlayerService service;
+	PlayerService* service = new PlayerService(qApp);
 
 }
 #endif
@@ -36,11 +36,8 @@ void initGUI()
 	QMDXPlayer* mdxPlayer = createMDXPlayer(engine); // 音楽再生用
 	engine->rootContext()->setContextProperty("mdxPlayer", mdxPlayer);
 
-	QObjectList* playList = new QObjectList;
-	engine->rootContext()->setContextProperty("playList", QVariant::fromValue(*playList));
-
-	Helper* helper = new Helper(engine->rootContext(), playList, engine);
-	engine->rootContext()->setContextProperty("appHelper", helper);
+	PlaylistManager* playListManager = new PlaylistManager(engine->rootContext(), engine);
+	engine->rootContext()->setContextProperty("playlistManager", playListManager);
 
 #ifdef QT_DEBUG
 	engine->rootContext()->setContextProperty("debug", true);
@@ -49,7 +46,7 @@ void initGUI()
 #endif
 
 	// デフォルトのプレイリストをロード
-	helper->loadDefaultPlaylist();
+	playListManager->loadDefaultPlaylist();
 
 	engine->load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 }

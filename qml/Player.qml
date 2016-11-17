@@ -72,12 +72,12 @@ PlayerForm {
 
     buttonLoad  {
         onClicked:{
-            appHelper.loadPlayList("test");
+            playlistManager.loadPlayList("test");
         }
     }
     buttonSave  {
         onClicked:{
-            appHelper.savePlayList("test");
+            playlistManager.savePlayList("test");
         }
     }
     buttonTrace  {
