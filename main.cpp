@@ -9,12 +9,18 @@
 #include "playlistitem.h"
 
 #ifdef Q_OS_ANDROID
-#include "qmdxplayerclientproxy.h"
 #include "playerservice.h"
+#include "qmdxplayerclientproxy.h"
+#include "qmdxplayerserviceproxy.h"
+
 void initService()
 {
-	PlayerService* service = new PlayerService(qApp);
+	QMDXPlayer* player = new QMDXPlayer(qApp);
+	PlayerService* service = new PlayerService(player);
+	QMDXPlayerServiceProxy* proxy = new QMDXPlayerServiceProxy(player, player);
 
+	// プレーヤー側のタイトルが変わったら通知を出す
+	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);
 }
 #endif
 

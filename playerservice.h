@@ -60,11 +60,14 @@ class PlayerService : public QObject
 public:
 	explicit PlayerService(QObject *parent = 0);
 
-	void setNotification(const QString &notification);
 	QString notification() const;
 
 signals:
-	void notificationChanged();
+        void notificationChanged();
+
+public slots:
+        void setNotification(const QString &notification);
+
 
 private slots:
 	void updateAndroidNotification();
