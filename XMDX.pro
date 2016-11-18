@@ -11,11 +11,11 @@ ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DEFINES += ALWAYSFULLSCREEN
 SOURCES +=  \
-    PlayerService.cpp \
+    playerservice.cpp \
     qmdxplayerclientproxy.cpp \
     qmdxplayerserviceproxy.cpp
 HEADERS += \
-    PlayerService.h \
+    playerservice.h \
     qmdxplayerclientproxy.h \
     qmdxplayerserviceproxy.h
 }

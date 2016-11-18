@@ -63,10 +63,10 @@ public:
 	QString notification() const;
 
 signals:
-        void notificationChanged();
+	void notificationChanged();
 
 public slots:
-        void setNotification(const QString &notification);
+	void setNotification(const QString &notification);
 
 
 private slots:

@@ -49,7 +49,7 @@ protected slots:
 	virtual void setIsSongLoaded(bool isSongLoaded);
 
 protected:
-	QMDXPlayerReplica replica_;
+	QSharedPointer<QMDXPlayerReplica> replica_;
 
 	float currentPosition_;
 	QString currentPositionString_;

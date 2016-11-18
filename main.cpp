@@ -9,6 +9,7 @@
 #include "playlistitem.h"
 
 #ifdef Q_OS_ANDROID
+#include <QtAndroid>
 #include "playerservice.h"
 #include "qmdxplayerclientproxy.h"
 #include "qmdxplayerserviceproxy.h"
@@ -21,6 +22,9 @@ void initService()
 
 	// プレーヤー側のタイトルが変わったら通知を出す
 	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);
+
+	QRemoteObjectHost* srcNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:replica")), qApp);
+	srcNode->enableRemoting(proxy);
 }
 #endif
 
@@ -67,6 +71,11 @@ int main(int argc, char *argv[])
 	if(argc >= 2 && QString(argv[1]) == "-service"){
 		initService();
 	} else {
+		QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/PlayerService",
+												  "startPlayerService",
+												  "(Landroid/content/Context;)V",
+												  QtAndroid::androidActivity().object());
+
 		initGUI();
 	}
 #else
