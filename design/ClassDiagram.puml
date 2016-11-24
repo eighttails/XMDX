@@ -58,16 +58,39 @@ Package AndroidService{
   QMDXPlayerServiceProxy"1" *-> "1" QMDXPlayer
 
   class PlaylistManagerServiceProxy{
-
+    + int nextRandom(bool loop);
+    + int previousRandom(bool loop);
+    ..SLOTS..
+    + void clearPlaylist();
+    + bool loadPlaylist(const QString& playlistName);
+    + bool savePlaylist(const QString& playlistName);
+    + bool loadDefaultPlaylist();
+    + bool saveDefaultPlaylist();
+    + bool addFile(const QString& mdxFile);
+    + bool addFolder(const QString& addPath, bool isTopFolder = true);
   }
   PlaylistManagerSource<|-PlaylistManagerServiceProxy
 
   class PlaylistManager{
-
     + QString addFileDialog();
     + QString addFolderDialog();
-
+    + int nextRandom(bool loop);
+    + int previousRandom(bool loop);
+    ..SIGNALS..
+    + void playlistChanged(QString playlist)
+    ..SLOTS..
+    + void clearPlaylist();
+    + bool loadPlaylist(const QString& playlistName);
+    + bool savePlaylist(const QString& playlistName);
+    + bool loadDefaultPlaylist();
+    + bool saveDefaultPlaylist();
+    + bool addFile(const QString& mdxFile);
+    + bool addFolder(const QString& addPath, bool isTopFolder = true);
   }
+  PlaylistManagerServiceProxy->PlaylistManager
+
+  class MXDRV
+  QMDXPlayer"*"->"1" MXDRV
 
 }
 
@@ -104,12 +127,21 @@ package AndroidActivity{
   QMDXPlayerClientProxy . ClientProxyNote
   PlaylistManagerClientProxy . ClientProxyNote
   QMDXPlayer<|-QMDXPlayerClientProxy
-
+  PlaylistManager<|-PlaylistManagerClientProxy
   class PlaylistManagerClientProxy{
-
+    ..SLOTS..
+    + void clearPlaylist();
+    + bool loadPlaylist(const QString& playlistName);
+    + bool savePlaylist(const QString& playlistName);
+    + bool loadDefaultPlaylist();
+    + bool saveDefaultPlaylist();
+    + bool addFile(const QString& mdxFile);
+    + bool addFolder(const QString& addPath, bool isTopFolder = true);
+    ..PROTECTED SLOTS..
+    void setPlaylist(QString playlist);
   }
-
 }
+
 PlaylistManagerClientProxy"1"*->"1"PlaylistManagerReplica
 QMDXPlayerClientProxy"1"*->"1"QMDXPlayerReplica
 

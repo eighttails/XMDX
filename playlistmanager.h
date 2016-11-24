@@ -20,26 +20,25 @@ public:
 	Q_INVOKABLE QString fileNameFromPath(const QString & filePath) const {
 		return QFileInfo(filePath).fileName();
 	}
+	// ランダム再生時の曲順を取得
+	Q_INVOKABLE int nextRandom(bool loop);
+	Q_INVOKABLE int previousRandom(bool loop);
 
 public slots:
-
-	void clearPlaylist();
+	// プレイリストをクリア
+	virtual void clearPlaylist();
 
 	// 指定したプレイリストの読み込み、保存
-	bool loadPlaylist(const QString& playlistName);
-	bool savePlaylist(const QString& playlistName);
+	virtual bool loadPlaylist(const QString& playlistName);
+	virtual bool savePlaylist(const QString& playlistName);
 
 	// デフォルトのプレイリストの読み込み、保存
-	bool loadDefaultPlaylist();
-	bool saveDefaultPlaylist();
+	virtual bool loadDefaultPlaylist();
+	virtual bool saveDefaultPlaylist();
 
 	// プレイリストにファイルを追加
-	bool addFile(const QString& mdxFile);
-	bool addFolder(const QString& addPath, bool isTopFolder = true);
-
-	// ランダム再生時の曲順を取得
-	int nextRandom(bool loop);
-	int previousRandom(bool loop);
+	virtual bool addFile(const QString& mdxFile);
+	virtual bool addFolder(const QString& addPath, bool isTopFolder = true);
 
 signals:
 	// プレイリストが変更されたときにシリアライズされたプレイリストを送る。
