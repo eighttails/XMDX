@@ -1,0 +1,116 @@
+@startuml
+
+Package QtRemoteObjects{
+  class QMDXPlayerReplica{
+  }
+  class QMDXPlayerSource{
+  }
+  class PlaylistManagerReplica{
+  }
+  class PlaylistManagerSource{
+  }
+}
+
+
+Package AndroidService{
+  class QMDXPlayer{
+    ..SIGNALS..
+    + isPlayingChanged(bool isPlaying)
+    + isSongLoadedChanged(bool isSongLoaded)
+    + titleChanged(QString title)
+    + fileNameChanged(QString fileName)
+    + durationChanged(float duration)
+    + durationStringChanged(QString duration)
+    + currentPositionChanged(float currentPosition)
+    + currentPositionStringChanged(QString currentPosition)
+    + songPlayFinished()
+    ..SLOTS..
+    + bool loadSong(bool renderWav,
+            const QString& fileName,
+            const QString& pdxPath,
+            unsigned loops,
+            bool enableFadeout)
+    + bool startPlay()
+    + bool stopPlay()
+    + bool setCurrentPosition(float position)
+    ....
+    + QString title()
+    + QString fileName()
+    + float duration()
+    + QString durationString()
+    + float currentPosition()
+    + QString currentPositionString()
+    + bool isPlaying()
+    + bool isSongLoaded()
+  }
+  class QMDXPlayerServiceProxy{
+    ..SLOTS..
+    + bool loadSong(bool renderWav,
+      const QString &fileName,
+      const QString &pdxPath,
+      unsigned loops,
+      bool enableFadeout) override;
+  	+ bool startPlay() override;
+  	+ bool stopPlay() override;
+  	+ bool setCurrentPosition(float position) override;
+  }
+  QMDXPlayerSource<|-QMDXPlayerServiceProxy
+  QMDXPlayerServiceProxy"1" *-> "1" QMDXPlayer
+
+  class PlaylistManagerServiceProxy{
+
+  }
+  PlaylistManagerSource<|-PlaylistManagerServiceProxy
+
+  class PlaylistManager{
+
+    + QString addFileDialog();
+    + QString addFolderDialog();
+
+  }
+
+}
+
+package AndroidActivity{
+
+  class QMDXPlayerClientProxy {
+    ..SLOTS..
+    + float currentPosition() override;
+    + QString currentPositionString() override;
+    + bool isPlaying() override;
+    ....
+    + QString title();
+    + QString fileName();
+    + float duration();
+    + QString durationString();
+    + float currentPosition();
+    + QString currentPositionString();
+    + bool isPlaying();
+    + bool isSongLoaded();
+
+    ..PROTECTED SLOTS..
+  	# void setTitle(QString title);
+  	# void setFileName(QString fileName);
+  	# void setDuration(float duration);
+  	# void setCurrentPositionInternal(float currentPosition);
+  	# void setCurrentPositionString(QString currentPositionString);
+  	# void setIsPlaying(bool isPlaying);
+  	# void setIsSongLoaded(bool isSongLoaded);
+  }
+  note as ClientProxyNote
+  GUIからプレーヤーへの要求をサービスに移譲するためのクラス
+  Androidの場合に使用する。
+  end note
+  QMDXPlayerClientProxy . ClientProxyNote
+  PlaylistManagerClientProxy . ClientProxyNote
+  QMDXPlayer<|-QMDXPlayerClientProxy
+
+  class PlaylistManagerClientProxy{
+
+  }
+
+}
+PlaylistManagerClientProxy"1"*->"1"PlaylistManagerReplica
+QMDXPlayerClientProxy"1"*->"1"QMDXPlayerReplica
+
+@enduml
