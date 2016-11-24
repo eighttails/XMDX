@@ -26,14 +26,14 @@ ApplicationWindow {
             // ランダム再生
             var index = playlistManager.nextRandom(settings.loop);
             if( index >= 0){
-                playListView.listViewBody.currentIndex = index;
+                playlistView.listViewBody.currentIndex = index;
             }
         } else {
-            if(settings.loop &&  playListView.listViewBody.currentIndex == playListView.listViewBody.count - 1){
+            if(settings.loop &&  playlistView.listViewBody.currentIndex == playlistView.listViewBody.count - 1){
                 // ループ再生時はリストの最後まで行ったら先頭に戻る
-                playListView.listViewBody.currentIndex = 0;
+                playlistView.listViewBody.currentIndex = 0;
             } else {
-                playListView.listViewBody.incrementCurrentIndex();
+                playlistView.listViewBody.incrementCurrentIndex();
             }
         }
     }
@@ -50,14 +50,14 @@ ApplicationWindow {
             // ランダム再生
             var index = playlistManager.previousRandom(settings.loop);
             if( index >= 0){
-                playListView.listViewBody.currentIndex = index;
+                playlistView.listViewBody.currentIndex = index;
             }
         } else {
-            if(settings.loop &&  playListView.listViewBody.currentIndex == 0){
+            if(settings.loop &&  playlistView.listViewBody.currentIndex == 0){
                 // ループ再生時はリストの先頭まで行ったら末尾に戻る
-                playListView.listViewBody.currentIndex = playListView.listViewBody.count - 1;
+                playlistView.listViewBody.currentIndex = playlistView.listViewBody.count - 1;
             } else {
-                playListView.listViewBody.decrementCurrentIndex();
+                playlistView.listViewBody.decrementCurrentIndex();
             }
         }
     }
@@ -93,21 +93,21 @@ ApplicationWindow {
             }
         }
 
-        PlayListView{
-            id: playListView
+        PlaylistView{
+            id: playlistView
             Layout.fillWidth: true
             Layout.fillHeight: true
-            listViewBody.model: playList
+            listViewBody.model: playlist
         }
 
         Menu{
             id: mainMenu
             font.pixelSize: 14
             MenuItem{
-                id: menuNewPlayList
+                id: menuNewPlaylist
                 text: "新規プレイリスト"
                 onTriggered: {
-                    playlistManager.clearPlayList();
+                    playlistManager.clearPlaylist();
                 }
             }
             MenuItem{
@@ -131,11 +131,11 @@ ApplicationWindow {
                 }
             }
             MenuItem{
-                id: menuLoadPlayList
+                id: menuLoadPlaylist
                 text: "プレイリストを読み込み..."
             }
             MenuItem{
-                id: menuSavePlayList
+                id: menuSavePlaylist
                 text: "プレイリストを保存..."
             }
             MenuItem{

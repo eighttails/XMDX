@@ -12,48 +12,51 @@ class PlaylistManager : public QObject
 	Q_OBJECT
 public:
 	explicit PlaylistManager(QQmlContext* rootContext, QObject *parent = 0);
-	Q_INVOKABLE QString fileNameFromPath(const QString & filePath) const {
-		return QFileInfo(filePath).fileName();
-	}
-	Q_INVOKABLE void clearPlayList();
-
-	// 指定したプレイリストの読み込み、保存
-	Q_INVOKABLE bool loadPlayList(const QString& playListName);
-	Q_INVOKABLE bool savePlayList(const QString& playListName);
-
-	// デフォルトのプレイリストの読み込み、保存
-	Q_INVOKABLE bool loadDefaultPlaylist();
-	Q_INVOKABLE bool saveDefaultPlayList();
-
-	// プレイリストにファイルを追加
-	Q_INVOKABLE bool addFile(const QString& mdxFile);
-	Q_INVOKABLE bool addFolder(const QString& addPath, bool isTopFolder = true);
 
 	// ファイル選択、フォルダ選択ダイアログを開く
 	// キャンセルされたときは空文字列を返す
 	Q_INVOKABLE QString addFileDialog();
 	Q_INVOKABLE QString addFolderDialog();
-
-	// ランダム再生時の曲順を取得
-	Q_INVOKABLE int nextRandom(bool loop);
-	Q_INVOKABLE int previousRandom(bool loop);
-
-signals:
+	Q_INVOKABLE QString fileNameFromPath(const QString & filePath) const {
+		return QFileInfo(filePath).fileName();
+	}
 
 public slots:
 
+	void clearPlaylist();
+
+	// 指定したプレイリストの読み込み、保存
+	bool loadPlaylist(const QString& playlistName);
+	bool savePlaylist(const QString& playlistName);
+
+	// デフォルトのプレイリストの読み込み、保存
+	bool loadDefaultPlaylist();
+	bool saveDefaultPlaylist();
+
+	// プレイリストにファイルを追加
+	bool addFile(const QString& mdxFile);
+	bool addFolder(const QString& addPath, bool isTopFolder = true);
+
+	// ランダム再生時の曲順を取得
+	int nextRandom(bool loop);
+	int previousRandom(bool loop);
+
+signals:
+	// プレイリストが変更されたときにシリアライズされたプレイリストを送る。
+	void playlistChanged(QString playlist);
+
 private:
-	bool loadPlayList(QString path, QString playListName);
-	bool savePlayList(QString path, QString playListName);
+	bool loadPlaylist(QString path, QString playlistName);
+	bool savePlaylist(QString path, QString playlistName);
 
-	void makeRandomPlayList();
+	void makeRandomPlaylist();
 
-	void notifyPlayListUpdated();
+	void notifyPlaylistUpdated();
 	QQmlContext* rootContext_;
-	QList<QObject*> playList_;
+	QList<QObject*> playlist_;
 
 	// ランダム再生用の
-	std::vector<int> randomPlayList_;
+	std::vector<int> randomPlaylist_;
 	int randomPlayIndex_;
 };
 

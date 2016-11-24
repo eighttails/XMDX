@@ -1,6 +1,6 @@
 import QtQuick 2.4
 
-PlayListViewDelegateForm {
+PlaylistViewDelegateForm {
     mdxTitle.text: title
     mdxFileName.text: playlistManager.fileNameFromPath(fileName)
     width: parent.width

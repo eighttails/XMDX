@@ -2,7 +2,7 @@
 #define QMDXPLAYERCLIENTPROXY_H
 
 #include "qmdxplayer.h"
-#include "rep_qmdxplayer_replica.h"
+class QMDXPlayerReplica;
 
 class QMDXPlayerClientProxy : public QMDXPlayer
 {

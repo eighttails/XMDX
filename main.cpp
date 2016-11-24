@@ -46,8 +46,8 @@ void initGUI()
 	QMDXPlayer* mdxPlayer = createMDXPlayer(engine); // 音楽再生用
 	engine->rootContext()->setContextProperty("mdxPlayer", mdxPlayer);
 
-	PlaylistManager* playListManager = new PlaylistManager(engine->rootContext(), engine);
-	engine->rootContext()->setContextProperty("playlistManager", playListManager);
+	PlaylistManager* playlistManager = new PlaylistManager(engine->rootContext(), engine);
+	engine->rootContext()->setContextProperty("playlistManager", playlistManager);
 
 #ifdef QT_DEBUG
 	engine->rootContext()->setContextProperty("debug", true);
@@ -56,7 +56,7 @@ void initGUI()
 #endif
 
 	// デフォルトのプレイリストをロード
-	playListManager->loadDefaultPlaylist();
+	playlistManager->loadDefaultPlaylist();
 
 	engine->load(QUrl(QLatin1String("qrc:/qml/main.qml")));
 }
@@ -71,11 +71,11 @@ int main(int argc, char *argv[])
 	if(argc >= 2 && QString(argv[1]) == "-service"){
 		initService();
 	} else {
+		// サービスを開始
 		QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/PlayerService",
 												  "startPlayerService",
 												  "(Landroid/content/Context;)V",
 												  QtAndroid::androidActivity().object());
-
 		initGUI();
 	}
 #else

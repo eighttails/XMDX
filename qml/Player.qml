@@ -72,19 +72,19 @@ PlayerForm {
 
     buttonLoad  {
         onClicked:{
-            playlistManager.loadPlayList("test");
+            playlistManager.loadPlaylist("test");
         }
     }
     buttonSave  {
         onClicked:{
-            playlistManager.savePlayList("test");
+            playlistManager.savePlaylist("test");
         }
     }
     buttonTrace  {
         onClicked:{
             console.log("currentPosition:", mdxPlayer.currentPosition);
             console.log("duration:", mdxPlayer.duration);
-            console.log("playList items:", playList.count);
+            console.log("playlist items:", playlist.count);
         }
     }
 }

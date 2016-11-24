@@ -16,10 +16,10 @@
         <file>icon/openiconic/volume-high.svg</file>
         <file>icon/openiconic/volume-low.svg</file>
         <file>icon/openiconic/x.svg</file>
-        <file>qml/PlayListView.qml</file>
-        <file>qml/PlayListViewForm.ui.qml</file>
-        <file>qml/PlayListViewDelegate.qml</file>
-        <file>qml/PlayListViewDelegateForm.ui.qml</file>
+        <file>qml/PlaylistView.qml</file>
+        <file>qml/PlaylistViewForm.ui.qml</file>
+        <file>qml/PlaylistViewDelegate.qml</file>
+        <file>qml/PlaylistViewDelegateForm.ui.qml</file>
         <file>qml/PanelButton.qml</file>
         <file>icon/XMDX.png</file>
         <file>icon/XMDX.svg</file>
