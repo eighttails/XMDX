@@ -16,26 +16,13 @@ ApplicationWindow {
 
     Settings{
         id:settings
-        property alias random: playerPanel.isRandomEnabled
-        property alias loop: playerPanel.isLoopEnabled
+        property alias isRandomEnabled: playerPanel.isRandomEnabled
+        property alias isLoopEnabled: playerPanel.isLoopEnabled
+        property int numOfLoops: 2
     }
-
     // 次の曲に移動
     function stepForward(){
-        if(settings.random){
-            // ランダム再生
-            var index = playlistManager.nextRandom(settings.loop);
-            if( index >= 0){
-                playlistView.listViewBody.currentIndex = index;
-            }
-        } else {
-            if(settings.loop &&  playlistView.listViewBody.currentIndex == playlistView.listViewBody.count - 1){
-                // ループ再生時はリストの最後まで行ったら先頭に戻る
-                playlistView.listViewBody.currentIndex = 0;
-            } else {
-                playlistView.listViewBody.incrementCurrentIndex();
-            }
-        }
+        mdxPlayer.stepForward();
     }
 
     // 前の曲に戻る
@@ -46,27 +33,7 @@ ApplicationWindow {
             return;
         }
 
-        if(settings.random){
-            // ランダム再生
-            var index = playlistManager.previousRandom(settings.loop);
-            if( index >= 0){
-                playlistView.listViewBody.currentIndex = index;
-            }
-        } else {
-            if(settings.loop &&  playlistView.listViewBody.currentIndex == 0){
-                // ループ再生時はリストの先頭まで行ったら末尾に戻る
-                playlistView.listViewBody.currentIndex = playlistView.listViewBody.count - 1;
-            } else {
-                playlistView.listViewBody.decrementCurrentIndex();
-            }
-        }
-    }
-
-    Connections {
-        target: mdxPlayer
-        onSongPlayFinished: {
-            stepForward();
-        }
+        mdxPlayer.stepBackward();
     }
 
     GridLayout {
@@ -98,6 +65,7 @@ ApplicationWindow {
             Layout.fillWidth: true
             Layout.fillHeight: true
             listViewBody.model: playlist
+            currentIndex: playlistManager.currentIndex
         }
 
         Menu{

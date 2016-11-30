@@ -19,4 +19,9 @@ class QMDXPlayer
     SLOT(bool stopPlay());
     // 曲中のシーク(引数は曲頭からの秒数)
     SLOT(bool setCurrentPosition(float position));
+
+    // 曲送り、曲戻し
+    SLOT(bool stepForward());
+    SLOT(bool stepBackward());
+
 }

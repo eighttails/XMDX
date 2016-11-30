@@ -10,6 +10,7 @@
 class PlaylistManager : public QObject
 {
 	Q_OBJECT
+	Q_PROPERTY(int currentIndex READ currentIndex WRITE setCurrentIndex NOTIFY currentIndexChanged)
 public:
 	explicit PlaylistManager(QQmlContext* rootContext, QObject *parent = 0);
 
@@ -20,9 +21,16 @@ public:
 	Q_INVOKABLE QString fileNameFromPath(const QString & filePath) const {
 		return QFileInfo(filePath).fileName();
 	}
-	// ランダム再生時の曲順を取得
-	Q_INVOKABLE int nextRandom(bool loop);
-	Q_INVOKABLE int previousRandom(bool loop);
+	// 次、または前の曲のファイル名を取得
+	Q_INVOKABLE QString next(bool random, bool loop);
+	Q_INVOKABLE QString previous(bool random, bool loop);
+
+	// インデックスを指定して曲名を取得
+	Q_INVOKABLE QString setCurrentIndex(int index);
+
+	// 現在再生中の曲のインデックス
+	// 曲がない場合は-1になる。
+	Q_INVOKABLE int currentIndex();
 
 public slots:
 	// プレイリストをクリア
@@ -44,6 +52,9 @@ signals:
 	// プレイリストが変更されたときにシリアライズされたプレイリストを送る。
 	void playlistChanged(QString playlist);
 
+	// 再生中の曲のインデックスが変更された場合に通知を送る
+	void currentIndexChanged(int index);
+
 private:
 	bool loadPlaylist(QString path, QString playlistName);
 	bool savePlaylist(QString path, QString playlistName);
@@ -53,6 +64,9 @@ private:
 	void notifyPlaylistUpdated();
 	QQmlContext* rootContext_;
 	QList<QObject*> playlist_;
+
+	// 現在再生中の曲を示すインデックス。曲がない場合は-1を示す
+	int currentIndex_;
 
 	// ランダム再生用の
 	std::vector<int> randomPlaylist_;

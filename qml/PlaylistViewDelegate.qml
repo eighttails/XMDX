@@ -9,7 +9,7 @@ PlaylistViewDelegateForm {
 
     itemDelegate1 {
         onClicked: {
-            listViewBody.currentIndex = index;
+            mdxPlayer.playFileByIndex(index);
         }
     }
 

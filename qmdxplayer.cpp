@@ -7,8 +7,10 @@
 #include <QTextCodec>
 #include <QFileInfo>
 #include <QTimer>
+#include <QSettings>
 
 #include "qmdxplayer.h"
+#include "playlistmanager.h"
 #include "mdx2wav/gamdx/mxdrvg/mxdrvg.h"
 
 typedef unsigned char u8;
@@ -54,8 +56,9 @@ void onMXDRVSegFault(int param)
 }
 
 
-QMDXPlayer::QMDXPlayer(QObject *parent)
+QMDXPlayer::QMDXPlayer(PlaylistManager *playlistManager, QObject *parent)
 	: QObject(parent)
+	, playlistManager_(playlistManager)
 	, isSongLoaded_(false)
 	, duration_(0.0)
 	, maxSongDuration_(20*60 - POST_GAP)
@@ -91,6 +94,8 @@ QMDXPlayer::QMDXPlayer(QObject *parent)
 	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationChanged(duration_);});
 	connect(this, &QMDXPlayer::durationChanged, [this]{emit durationStringChanged(durationString());});
 	connect(this, &QMDXPlayer::currentPositionChanged, [this]{emit currentPositionStringChanged(currentPositionString());});
+	// 曲の再生が終了したら次の曲を再生
+	connect(this, &QMDXPlayer::songPlayFinished, this, &QMDXPlayer::stepForward);
 }
 
 QMDXPlayer::~QMDXPlayer()
@@ -210,6 +215,45 @@ bool QMDXPlayer::setCurrentPosition(float position)
 	wavIndex_ = index;
 	emit currentPositionChanged(currentPosition());
 	return true;
+}
+
+bool QMDXPlayer::stepForward()
+{
+	if(!playlistManager_) return false;
+	QSettings settings;
+	int loops = settings.value("numOfLoops").toInt();
+	bool isRandomEnabled = settings.value("isRandomEnabled").toBool();
+	bool isLoopEnabled = settings.value("isLoopEnabled").toBool();
+	QString nextFile = playlistManager_->next(isRandomEnabled, isLoopEnabled);
+
+	if(nextFile.isEmpty()) return false;
+	return loadSong(true, nextFile, nullptr, loops, true);
+}
+
+bool QMDXPlayer::stepBackward()
+{
+	if(!playlistManager_) return false;
+	QSettings settings;
+	int loops = settings.value("numOfLoops").toInt();
+	bool isRandomEnabled = settings.value("isRandomEnabled").toBool();
+	bool isLoopEnabled = settings.value("isLoopEnabled").toBool();
+	QString nextFile = playlistManager_->previous(isRandomEnabled, isLoopEnabled);
+
+	if(nextFile.isEmpty()) return false;
+	return loadSong(true, nextFile, nullptr, loops, true);
+}
+
+bool QMDXPlayer::playFileByIndex(int index)
+{
+	if(!playlistManager_) return false;
+	QSettings settings;
+	int loops = settings.value("numOfLoops").toInt();
+	bool isRandomEnabled = settings.value("isRandomEnabled").toBool();
+	bool isLoopEnabled = settings.value("isLoopEnabled").toBool();
+	QString nextFile = playlistManager_->setCurrentIndex(index);
+
+	if(nextFile.isEmpty()) return false;
+	return loadSong(true, nextFile, nullptr, loops, true);
 }
 
 QString QMDXPlayer::title()

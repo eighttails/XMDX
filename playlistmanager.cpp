@@ -12,9 +12,13 @@
 #include "playlistitem.h"
 #include "qmdxplayer.h"
 
+// currentIndexが有効範囲にない場合(またはプレイリストが空の場合)、-1とする。
+constexpr int INDEX_INVALID = -1;
+
 PlaylistManager::PlaylistManager(QQmlContext* rootContext, QObject *parent)
 	: QObject(parent)
 	, rootContext_(rootContext)
+	, currentIndex_(INDEX_INVALID)
 	, randomPlayIndex_(0)
 {
 	Q_ASSERT(rootContext);
@@ -59,7 +63,7 @@ bool PlaylistManager::saveDefaultPlaylist()
 
 bool PlaylistManager::addFile(const QString& mdxFile)
 {
-	QMDXPlayer player;
+	QMDXPlayer player(nullptr);
 	if(!player.loadSong(false, mdxFile, "", 1, true)){
 		return false;
 	}
@@ -151,30 +155,72 @@ QString PlaylistManager::addFolderDialog()
 	return result;
 }
 
-int PlaylistManager::nextRandom(bool loop)
+QString PlaylistManager::next(bool random, bool loop)
 {
-	if(++randomPlayIndex_ >= randomPlaylist_.size()){
-		if(loop){
-			randomPlayIndex_ = 0;
-		} else {
-			// ループ再生でない場合、リストの終端に達したら-1を返す(停止する)
-			randomPlayIndex_ = randomPlaylist_.size() - 1;
-			return -1;
+	if(currentIndex_ == INDEX_INVALID) return "";
+	if(random){
+		if(++randomPlayIndex_ >= randomPlaylist_.size()){
+			if(loop){
+				randomPlayIndex_ = 0;
+			} else {
+				// ループ再生でない場合、リストの終端に達したらINDEX_NONEを返す(停止する)
+				randomPlayIndex_ = randomPlaylist_.size() - 1;
+				currentIndex_ = INDEX_INVALID;
+			}
+		}
+		currentIndex_ = randomPlaylist_.empty()
+				? INDEX_INVALID
+				: randomPlaylist_[randomPlayIndex_];
+	} else {
+		if(++currentIndex_ >= playlist_.size()){
+			if(loop){
+				currentIndex_ = 0;
+			} else {
+				// ループ再生でない場合、リストの終端に達したらINDEX_NONEを返す(停止する)
+				currentIndex_ = INDEX_INVALID;
+			}
 		}
 	}
-	return randomPlaylist_.empty()
-			? -1
-			: randomPlaylist_[randomPlayIndex_];
+	if(playlist_.isEmpty()) currentIndex_ = INDEX_INVALID;
+	emit currentIndexChanged(currentIndex_);
+	return currentIndex_ == INDEX_INVALID ? "" : playlist_[currentIndex_]->property("fileName").toString();
 }
 
-int PlaylistManager::previousRandom(bool loop)
+QString PlaylistManager::previous(bool random, bool loop)
 {
-	if(--randomPlayIndex_ < 0){
-		randomPlayIndex_ = 0;
+	if(currentIndex_ == INDEX_INVALID) return "";
+	if(random) {
+		if(--randomPlayIndex_ < 0){
+			randomPlayIndex_ = 0;
+		}
+		currentIndex_ = randomPlaylist_.empty()
+				? INDEX_INVALID
+				: randomPlaylist_[randomPlayIndex_];
+	} else {
+		if(--currentIndex_ < 0){
+			if(loop){
+				currentIndex_ = playlist_.size() - 1;
+			} else {
+				currentIndex_ = 0;
+			}
+		}
 	}
-	return randomPlaylist_.empty()
-			? -1
-			: randomPlaylist_[randomPlayIndex_];
+	if(playlist_.isEmpty()) currentIndex_ = INDEX_INVALID;
+	emit currentIndexChanged(currentIndex_);
+	return currentIndex_ == INDEX_INVALID ? "" : playlist_[currentIndex_]->property("fileName").toString();
+}
+
+QString PlaylistManager::setCurrentIndex(int index)
+{
+	if(index < 0 || index >= playlist_.size()) return "";
+	currentIndex_ = index;
+	emit currentIndexChanged(currentIndex_);
+	return playlist_[index]->property("fileName").toString();
+}
+
+int PlaylistManager::currentIndex()
+{
+	return currentIndex_;
 }
 
 bool PlaylistManager::loadPlaylist(QString path, QString playlistName)

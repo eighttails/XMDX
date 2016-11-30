@@ -16,9 +16,9 @@
 
 void initService()
 {
-	QMDXPlayer* player = new QMDXPlayer(qApp);
-	PlayerService* service = new PlayerService(player);
-	QMDXPlayerServiceProxy* proxy = new QMDXPlayerServiceProxy(player, player);
+	PlayerService* service = new PlayerService(qApp);
+	QMDXPlayer* player = new QMDXPlayer(service);
+	QMDXPlayerServiceProxy* proxy = new QMDXPlayerServiceProxy(player, service);
 
 	// プレーヤー側のタイトルが変わったら通知を出す
 	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);
@@ -28,11 +28,11 @@ void initService()
 }
 #endif
 
-QMDXPlayer* createMDXPlayer(QQmlApplicationEngine* engine){
+QMDXPlayer* createMDXPlayer(PlaylistManager* playlistManager, QObject* parent){
 #ifdef Q_OS_ANDROID
-	return new QMDXPlayerClientProxy(engine);
+	return new QMDXPlayerClientProxy(playlistManager, parent);
 #else
-	return new QMDXPlayer(engine);
+	return new QMDXPlayer(playlistManager, parent);
 #endif
 }
 
@@ -43,11 +43,11 @@ void initGUI()
 
 	QQmlApplicationEngine* engine = new QQmlApplicationEngine(qApp);
 
-	QMDXPlayer* mdxPlayer = createMDXPlayer(engine); // 音楽再生用
-	engine->rootContext()->setContextProperty("mdxPlayer", mdxPlayer);
-
 	PlaylistManager* playlistManager = new PlaylistManager(engine->rootContext(), engine);
 	engine->rootContext()->setContextProperty("playlistManager", playlistManager);
+
+	QMDXPlayer* mdxPlayer = createMDXPlayer(playlistManager, engine); // 音楽再生用
+	engine->rootContext()->setContextProperty("mdxPlayer", mdxPlayer);
 
 #ifdef QT_DEBUG
 	engine->rootContext()->setContextProperty("debug", true);

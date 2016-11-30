@@ -1,20 +1,136 @@
 
 @startuml
-hide footbox
 title 基本再生シーケンス
 autonumber
 
 box "Android Activity" #LightBlue
-	participant QMDXPlayerProxy
+	participant XMDX.java
+	participant "Main(Activity)" as ActivityMain
+	participant "QSettings(Activity)" as ASettings
+	participant QMLGUI
+	participant RootContext
+	participant QMDXPlayerClientProxy
 	participant QMDXPlayerReplica
+	participant PlaylistManagerClientProxy
+	participant PlaylistManagerReplica
 end box
-box "Android Server"
+box "Android Server" #LightGreen
+  participant PlayerService.java
+	participant "Main(Service)" as ServiceMain
+	participant "QSettings(Service)" as SSettings
+	participant PlayerService
+	participant QMDXPlayer
   participant QMDXPlayerServiceProxy
-  participant QMDXPlayer
+	participant PlaylistManagerServiceProxy
+	participant PlaylistManager
 end box
 
-QMDXPlayerProxy -> QMDXPlayerReplica
-QMDXPlayerReplica->QMDXPlayerServiceProxy
-QMDXPlayerServiceProxy->QMDXPlayer
+==初期化==
+'アクティビティ側
+XMDX.java->ActivityMain:起動
+activate ActivityMain
+
+create ASettings
+ActivityMain->ASettings:<<create>>
+create QMDXPlayerClientProxy
+ActivityMain->QMDXPlayerClientProxy:<<create>>
+
+create QMDXPlayerReplica
+QMDXPlayerClientProxy->QMDXPlayerReplica:<<create>>
+
+create PlaylistManagerClientProxy
+ActivityMain->PlaylistManagerClientProxy:<<create>>
+
+create PlaylistManagerReplica
+PlaylistManagerClientProxy->PlaylistManagerReplica:<<create>>
+
+create QMLGUI
+ActivityMain->QMLGUI:<<create>>
+
+create RootContext
+ActivityMain->RootContext:<<create>>
+
+'サービス側
+==接続確立==
+ActivityMain-->PlayerService.java:startPlayerService()
+PlayerService.java->ServiceMain:起動
+deactivate ActivityMain
+
+activate ServiceMain
+create SSettings
+ServiceMain->SSettings:<<create>>
+
+create PlayerService
+ServiceMain->PlayerService:<<create>>
+
+create QMDXPlayer
+ServiceMain->QMDXPlayer:<<create>>
+
+create QMDXPlayerServiceProxy
+ServiceMain->QMDXPlayerServiceProxy:<<create>>
+
+create PlaylistManagerServiceProxy
+ServiceMain->PlaylistManagerServiceProxy:<<create>>
+
+create PlaylistManager
+PlaylistManagerServiceProxy->PlaylistManager:<<create>>
+
+ServiceMain->PlaylistManager:loadDefaultPlaylist()
+
+deactivate ServiceMain
+
+==プレイリスト追加==
+’クライアント側
+activate QMLGUI
+QMLGUI->PlaylistManagerClientProxy:addFolderDialog()
+activate PlaylistManagerClientProxy
+PlaylistManagerClientProxy-->PlaylistManagerReplica:addFolder()
+activate PlaylistManagerReplica
+PlaylistManagerClientProxy-->QMLGUI
+deactivate PlaylistManagerClientProxy
+QMLGUI->QMLGUI:BusyIndicator表示
+activate QMLGUI
+deactivate QMLGUI
+deactivate QMLGUI
+
+’サービス側
+PlaylistManagerReplica->PlaylistManagerServiceProxy:addFolder()
+deactivate PlaylistManagerReplica
+
+activate PlaylistManagerServiceProxy
+PlaylistManagerServiceProxy->PlaylistManager:addFolder()
+loop
+activate PlaylistManager
+PlaylistManager->PlaylistManager:addFile()
+activate PlaylistManager
+PlaylistManager-->PlayerService:notify("プレイリストに追加中：曲名")
+deactivate PlaylistManager
+end loop
+PlaylistManager-->PlayerService:notify("")
+note right:通知を消す
+
+PlaylistManager->PlaylistManagerServiceProxy:<<SIGNAL>>\nplaylistChanged(playList)
+note right:シリアライズ化されたプレイリストを文字列として送る\n(QObjectの状態ではプロセス境界をまたげないため)
+
+deactivate PlaylistManager
+PlaylistManagerServiceProxy->PlaylistManagerReplica:<<SIGNAL>>\nplaylistChanged(playList)
+deactivate PlaylistManagerServiceProxy
+
+’クライアント側
+activate PlaylistManagerReplica
+PlaylistManagerReplica->PlaylistManagerClientProxy:<<SLOT>>\nsetPlayList(playList)
+deactivate PlaylistManagerReplica
+activate PlaylistManagerClientProxy
+PlaylistManagerClientProxy->RootContext:setContextProperty\n("playlist",playList)
+deactivate PlaylistManagerClientProxy
+activate RootContext
+RootContext->QMLGUI:プレイリスト表示に反映
+deactivate RootContext
+activate QMLGUI
+QMLGUI->QMLGUI:BusyIndicatorを消す
+activate QMLGUI
+deactivate QMLGUI
+deactivate QMLGUI
+
 
 @enduml

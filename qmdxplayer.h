@@ -7,6 +7,8 @@
 #include <QMutex>
 #include <QAudioOutput>
 
+class PlaylistManager;
+
 class QMDXPlayer : public QObject
 {
 	Q_OBJECT
@@ -19,7 +21,7 @@ class QMDXPlayer : public QObject
 	Q_PROPERTY(bool isPlaying READ isPlaying NOTIFY isPlayingChanged)
 	Q_PROPERTY(bool isSongLoaded READ isSongLoaded NOTIFY isSongLoadedChanged)
 public:
-	explicit QMDXPlayer(QObject *parent = 0);
+	explicit QMDXPlayer(PlaylistManager *playlistManager = 0, QObject *parent = 0);
 	~QMDXPlayer() override;
 
 signals:
@@ -47,6 +49,13 @@ public slots:
 	virtual bool stopPlay();
 	// 曲中のシーク(引数は曲頭からの秒数)
 	virtual bool setCurrentPosition(float position);
+
+	// 曲送り、曲戻し
+	virtual bool stepForward();
+	virtual bool stepBackward();
+
+	// インデックスを指定して曲名を取得
+	virtual bool playFileByIndex(int index);
 
 public:
 	// 曲名を取得
@@ -102,6 +111,9 @@ protected:
 
 	QPointer<QIODevice> audioBuffer_;
 	QPointer<QAudioOutput> audioOutput_;
+
+	// プレイリスト管理クラス
+	QPointer<PlaylistManager> playlistManager_;
 
 	// 複数のインスタンスが同時にMXDRVを操作しないようにするための排他
 	static QMutex mutex_;
