@@ -2,6 +2,7 @@
 @startuml
 title 基本再生シーケンス
 autonumber
+actor ユーザー as User
 
 box "Android Activity" #LightBlue
 	participant XMDX.java
@@ -27,6 +28,7 @@ end box
 
 ==初期化==
 'アクティビティ側
+User->XMDX.java:起動
 XMDX.java->ActivityMain:起動
 activate ActivityMain
 
@@ -81,6 +83,7 @@ deactivate ServiceMain
 
 ==プレイリスト追加==
 ’クライアント側
+User->QMLGUI:フォルダを追加
 activate QMLGUI
 QMLGUI->PlaylistManagerClientProxy:addFolderDialog()
 activate PlaylistManagerClientProxy
@@ -132,5 +135,6 @@ activate QMLGUI
 deactivate QMLGUI
 deactivate QMLGUI
 
+==曲切り替え==
 
 @enduml

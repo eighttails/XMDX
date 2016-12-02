@@ -13,18 +13,31 @@
 #include "playerservice.h"
 #include "qmdxplayerclientproxy.h"
 #include "qmdxplayerserviceproxy.h"
+#include "playlistmanagerclientproxy.h"
+#include "playlistmanagerserviceproxy.h"
 
 void initService()
 {
 	PlayerService* service = new PlayerService(qApp);
-	QMDXPlayer* player = new QMDXPlayer(service);
-	QMDXPlayerServiceProxy* proxy = new QMDXPlayerServiceProxy(player, service);
+	PlaylistManager* playlistManager = new PlaylistManager(nullptr, service);
+	PlaylistManagerServiceProxy* playlistManagerProxy = new PlaylistManagerServiceProxy(playlistManager, service);
+
+	// デフォルトのプレイリストをロード
+	playlistManager->loadDefaultPlaylist();
+
+	QMDXPlayer* player = new QMDXPlayer(playlistManager, service);
+	QMDXPlayerServiceProxy* playerProxy = new QMDXPlayerServiceProxy(player, service);
 
 	// プレーヤー側のタイトルが変わったら通知を出す
 	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);
+	QObject::connect(playlistManager, &PlaylistManager::songAddedToPlaylist, service, &PlayerService::setNotification);
 
-	QRemoteObjectHost* srcNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:replica")), qApp);
-	srcNode->enableRemoting(proxy);
+	// リモート通信を有効化
+	QRemoteObjectHost* playerNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:player")), qApp);
+	playerNode->enableRemoting(playerProxy);
+	QRemoteObjectHost* playlistManagerNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:playlistManager")), qApp);
+	playlistManagerNode->enableRemoting(playlistManagerProxy);
+
 }
 #endif
 
@@ -36,6 +49,16 @@ QMDXPlayer* createMDXPlayer(PlaylistManager* playlistManager, QObject* parent){
 #endif
 }
 
+PlaylistManager* createPlaylistManager(QQmlContext* context, QObject* parent)
+{
+#ifdef Q_OS_ANDROID
+	return new PlaylistManagerClientProxy(context, parent);
+#else
+	return new PlaylistManager(context, parent);
+#endif
+
+}
+
 void initGUI()
 {
 	QApplication::setWindowIcon(QIcon(":/icon/XMDX.png"));
@@ -43,16 +66,16 @@ void initGUI()
 
 	QQmlApplicationEngine* engine = new QQmlApplicationEngine(qApp);
 
-	PlaylistManager* playlistManager = new PlaylistManager(engine->rootContext(), engine);
+	PlaylistManager* playlistManager = createPlaylistManager(engine->rootContext(), engine);
 	engine->rootContext()->setContextProperty("playlistManager", playlistManager);
 
 	QMDXPlayer* mdxPlayer = createMDXPlayer(playlistManager, engine); // 音楽再生用
 	engine->rootContext()->setContextProperty("mdxPlayer", mdxPlayer);
 
 #ifdef QT_DEBUG
-	engine->rootContext()->setContextProperty("debug", true);
+	engine->rootContext()->setContextProperty("debug", QVariant::fromValue(true));
 #else
-	engine->rootContext()->setContextProperty("debug", false);
+	engine->rootContext()->setContextProperty("debug", QVariant::fromValue(false));
 #endif
 
 	// デフォルトのプレイリストをロード
@@ -64,6 +87,10 @@ void initGUI()
 
 int main(int argc, char *argv[])
 {
+	QApplication::setApplicationName("XMDX");
+	QApplication::setOrganizationDomain("eighttails.org");
+	QApplication::setOrganizationName("eighttails");
+
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 	QApplication app(argc, argv);
 

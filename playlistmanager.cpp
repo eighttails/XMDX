@@ -21,8 +21,9 @@ PlaylistManager::PlaylistManager(QQmlContext* rootContext, QObject *parent)
 	, currentIndex_(INDEX_INVALID)
 	, randomPlayIndex_(0)
 {
-	Q_ASSERT(rootContext);
-	rootContext_->setContextProperty("playlist", QVariant::fromValue(playlist_));
+	if(rootContext){
+		rootContext_->setContextProperty("playlist", QVariant::fromValue(playlist_));
+	}
 }
 
 void PlaylistManager::clearPlaylist()
@@ -38,27 +39,27 @@ void PlaylistManager::clearPlaylist()
 bool PlaylistManager::loadPlaylist(const QString& playlistName)
 {
 	QString loadPath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	loadPlaylist(loadPath, playlistName);
+	if(!loadPlaylist(loadPath, playlistName)) return false;
 	// 読み込んだプレイリストはデフォルトとして反映
-	saveDefaultPlaylist();
+	return saveDefaultPlaylist();
 }
 
 bool PlaylistManager::savePlaylist(const QString& playlistName)
 {
 	QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppLocalDataLocation);
-	savePlaylist(savePath, playlistName);
+	return savePlaylist(savePath, playlistName);
 }
 
 bool PlaylistManager::loadDefaultPlaylist()
 {
 	QString loadPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	loadPlaylist(loadPath, "Playlist");
+	return loadPlaylist(loadPath, "Playlist");
 }
 
 bool PlaylistManager::saveDefaultPlaylist()
 {
 	QString savePath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
-	savePlaylist(savePath, "Playlist");
+	return savePlaylist(savePath, "Playlist");
 }
 
 bool PlaylistManager::addFile(const QString& mdxFile)
@@ -100,6 +101,7 @@ bool PlaylistManager::addFolder(const QString& addPath, bool isTopFolder)
 		}
 		PlaylistItem* item = new PlaylistItem(player.title(), info.absoluteFilePath());
 		playlist_.append(item);
+		emit songAddedToPlaylist(player.title());
 	}
 
 	if(isTopFolder){
@@ -159,7 +161,7 @@ QString PlaylistManager::next(bool random, bool loop)
 {
 	if(currentIndex_ == INDEX_INVALID) return "";
 	if(random){
-		if(++randomPlayIndex_ >= randomPlaylist_.size()){
+		if(++randomPlayIndex_ >= static_cast<int>(randomPlaylist_.size())){
 			if(loop){
 				randomPlayIndex_ = 0;
 			} else {
@@ -172,7 +174,7 @@ QString PlaylistManager::next(bool random, bool loop)
 				? INDEX_INVALID
 				: randomPlaylist_[randomPlayIndex_];
 	} else {
-		if(++currentIndex_ >= playlist_.size()){
+		if(++currentIndex_ >= static_cast<int>(playlist_.size())){
 			if(loop){
 				currentIndex_ = 0;
 			} else {
@@ -210,15 +212,30 @@ QString PlaylistManager::previous(bool random, bool loop)
 	return currentIndex_ == INDEX_INVALID ? "" : playlist_[currentIndex_]->property("fileName").toString();
 }
 
-QString PlaylistManager::setCurrentIndex(int index)
+const PlaylistItem* PlaylistManager::currentPlaylistItem()
 {
-	if(index < 0 || index >= playlist_.size()) return "";
-	currentIndex_ = index;
-	emit currentIndexChanged(currentIndex_);
-	return playlist_[index]->property("fileName").toString();
+	return dynamic_cast<PlaylistItem*>(playlist_[currentIndex_]);
 }
 
-int PlaylistManager::currentIndex()
+void PlaylistManager::setCurrentIndex(int index)
+{
+	int prevIndex = currentIndex_;
+	if(index < 0 || index >= playlist_.size()) return;
+	currentIndex_ = index;
+	if(prevIndex != currentIndex_) {
+		emit currentIndexChanged(currentIndex_);
+	}
+}
+
+QByteArray PlaylistManager::getPlaylist()
+{
+	QByteArray array;
+	QDataStream stream(&array, QIODevice::WriteOnly);
+	writePlaylist(stream);
+	return array;
+}
+
+int PlaylistManager::currentIndex() const
 {
 	return currentIndex_;
 }
@@ -228,10 +245,32 @@ bool PlaylistManager::loadPlaylist(QString path, QString playlistName)
 	QString playlistFileName = path + QDir::separator() + playlistName;
 
 	QFile playlistFile(playlistFileName);
-	QDataStream stream(&playlistFile);
 	if(!playlistFile.open(QIODevice::ReadOnly)){
 		return false;
 	}
+	QDataStream stream(&playlistFile);
+	return readPlaylist(stream);
+}
+
+bool PlaylistManager::savePlaylist(QString path, QString playlistName)
+{
+	QString playlistFileName = path + QDir::separator() + playlistName;
+
+	QDir d(path);
+	if(!d.exists()){
+		if (!d.mkpath(path))
+			return false;
+	}
+	QFile playlistFile(playlistFileName);
+	if(!playlistFile.open(QIODevice::WriteOnly | QIODevice::Truncate)){
+		return false;
+	}
+	QDataStream stream(&playlistFile);
+	return writePlaylist(stream);
+}
+
+bool PlaylistManager::readPlaylist(QDataStream &stream)
+{
 	while(!playlist_.isEmpty()){
 		playlist_.takeFirst()->deleteLater();
 	}
@@ -245,26 +284,15 @@ bool PlaylistManager::loadPlaylist(QString path, QString playlistName)
 	return true;
 }
 
-bool PlaylistManager::savePlaylist(QString path, QString playlistName)
+bool PlaylistManager::writePlaylist(QDataStream &stream)
 {
-	QString playlistFileName = path + QDir::separator() + playlistName;
-
-	QDir d(path);
-	if(!d.exists()){
-		if (!d.mkpath(path))
-			return false;
-	}
-	QFile playlistFile(playlistFileName);
-	QDataStream stream(&playlistFile);
-	if(!playlistFile.open(QIODevice::WriteOnly | QIODevice::Truncate)){
-		return false;
-	}
 	foreach(auto item, playlist_){
 		PlaylistItem* playlistItem = qobject_cast<PlaylistItem*>(item);
 		stream << playlistItem->title() << playlistItem->fileName();
 	}
 	return true;
 }
+
 
 void PlaylistManager::makeRandomPlaylist()
 {
@@ -275,7 +303,17 @@ void PlaylistManager::makeRandomPlaylist()
 	}
 	std::shuffle(randomPlaylist_.begin(), randomPlaylist_.end(), std::random_device());
 }
+
 void PlaylistManager::notifyPlaylistUpdated()
 {
-	rootContext_->setContextProperty("playlist", QVariant::fromValue(playlist_));
+	if(rootContext_){
+		rootContext_->setContextProperty("playlist", QVariant::fromValue(playlist_));
+	}
+	emit playlistChanged(getPlaylist());
+
+	if(playlist_.isEmpty()){
+		setCurrentIndex(INDEX_INVALID);
+	} else {
+		setCurrentIndex(0);
+	}
 }

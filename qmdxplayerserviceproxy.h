@@ -1,5 +1,6 @@
 #ifndef QMDXPLAYERSERVICEPROXY_H
 #define QMDXPLAYERSERVICEPROXY_H
+#include <QPointer>
 #include "rep_qmdxplayer_source.h"
 
 class QMDXPlayer;
@@ -15,9 +16,11 @@ public slots:
 	virtual bool startPlay() override;
 	virtual bool stopPlay() override;
 	virtual bool setCurrentPosition(float position) override;
-
+	virtual bool stepForward() override;
+	virtual bool stepBackward() override;
+	virtual bool playFileByIndex(int index) override;
 protected:
-	QMDXPlayer* player_;
+	QPointer<QMDXPlayer> player_;
 };
 
 #endif // QMDXPLAYERSERVICEPROXY_H

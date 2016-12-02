@@ -54,7 +54,7 @@ public slots:
 	virtual bool stepForward();
 	virtual bool stepBackward();
 
-	// インデックスを指定して曲名を取得
+	// インデックスを指定
 	virtual bool playFileByIndex(int index);
 
 public:

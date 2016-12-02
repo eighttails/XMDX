@@ -37,3 +37,18 @@ bool QMDXPlayerServiceProxy::setCurrentPosition(float position)
 {
 	return player_->setCurrentPosition(position);
 }
+
+bool QMDXPlayerServiceProxy::stepForward()
+{
+	return player_->stepForward();
+}
+
+bool QMDXPlayerServiceProxy::stepBackward()
+{
+	return player_->stepBackward();
+}
+
+bool QMDXPlayerServiceProxy::playFileByIndex(int index)
+{
+	return player_->playFileByIndex(index);
+}

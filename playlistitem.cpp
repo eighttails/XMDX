@@ -11,12 +11,12 @@ PlaylistItem::PlaylistItem(QString title, QString fileName)
 
 }
 
-QString PlaylistItem::title()
+QString PlaylistItem::title() const
 {
 	return title_;
 }
 
-QString PlaylistItem::fileName()
+QString PlaylistItem::fileName() const
 {
 	return fileName_;
 }

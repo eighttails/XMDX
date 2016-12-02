@@ -1,12 +1,12 @@
 #include "qmdxplayerclientproxy.h"
 #include "rep_qmdxplayer_replica.h"
 
-QMDXPlayerClientProxy::QMDXPlayerClientProxy(QObject* parent)
-	: QMDXPlayer(parent)
+QMDXPlayerClientProxy::QMDXPlayerClientProxy(PlaylistManager *playlistManager, QObject* parent)
+	: QMDXPlayer(playlistManager, parent)
 	, currentPosition_(0)
 {
 	QRemoteObjectNode* repNode = new QRemoteObjectNode(this);
-	repNode->connectToNode(QUrl(QStringLiteral("local:replica")));
+	repNode->connectToNode(QUrl(QStringLiteral("local:player")));
 	replica_.reset(repNode->acquire<QMDXPlayerReplica>());
 	bool res = replica_->waitForSource();
 	Q_ASSERT(res);
@@ -47,6 +47,21 @@ bool QMDXPlayerClientProxy::stopPlay()
 bool QMDXPlayerClientProxy::setCurrentPosition(float position)
 {
 	return replica_->setCurrentPosition(position).returnValue();
+}
+
+bool QMDXPlayerClientProxy::stepForward()
+{
+	return replica_->stepForward().returnValue();
+}
+
+bool QMDXPlayerClientProxy::stepBackward()
+{
+	return replica_->stepBackward().returnValue();
+}
+
+bool QMDXPlayerClientProxy::playFileByIndex(int index)
+{
+	return replica_->playFileByIndex(index).returnValue();
 }
 
 float QMDXPlayerClientProxy::currentPosition()

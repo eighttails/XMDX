@@ -6,18 +6,25 @@ android:{
 QT+= androidextras remoteobjects
 
 REPC_REPLICA += qmdxplayer.rep
+REPC_REPLICA += playlistmanager.rep
 REPC_SOURCE += qmdxplayer.rep
+REPC_SOURCE += playlistmanager.rep
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
 
 DEFINES += ALWAYSFULLSCREEN
 SOURCES +=  \
     playerservice.cpp \
     qmdxplayerclientproxy.cpp \
-    qmdxplayerserviceproxy.cpp
+    qmdxplayerserviceproxy.cpp \
+    playlistmanagerserviceproxy.cpp \
+    playlistmanagerclientproxy.cpp
+
 HEADERS += \
     playerservice.h \
     qmdxplayerclientproxy.h \
-    qmdxplayerserviceproxy.h
+    qmdxplayerserviceproxy.h \
+    playlistmanagerserviceproxy.h \
+    playlistmanagerclientproxy.h
 }
 
 win32:{
@@ -74,7 +81,12 @@ DISTFILES += \
     android/res/drawable/icon.png \
     android/res/drawable-ldpi/icon.png \
     android/src/org/eighttails/xmdx/PlayerService.java \
-    qmdxplayer.rep
+    qmdxplayer.rep \
+    playlistmanager.rep \
+    design/ClassDiagram.png \
+    design/PlayerSequence.png \
+    design/ClassDiagram.puml \
+    design/PlayerSequence.puml
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
@@ -98,5 +110,3 @@ HEADERS += \
     qmdxplayer.h \
     playlistitem.h \
     playlistmanager.h
-
-

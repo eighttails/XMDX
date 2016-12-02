@@ -1,0 +1,28 @@
+
+class PlaylistManager {
+    // プレイリスト上の現在のインデックス
+    PROP(int currentIndex);
+
+    // プレイリストが変更されたときにシリアライズされたプレイリストを送る。
+    SIGNAL(playlistChanged(QByteArray playlist));
+
+    // プレイリストをクリア
+    SLOT(void clearPlaylist());
+
+    // 指定したプレイリストの読み込み、保存
+    SLOT(bool loadPlaylist(const QString& playlistName));
+    SLOT(bool savePlaylist(const QString& playlistName));
+
+    // デフォルトのプレイリストの読み込み、保存
+    SLOT(bool loadDefaultPlaylist());
+    SLOT(bool saveDefaultPlaylist());
+
+    // プレイリストにファイルを追加
+    SLOT(bool addFile(const QString& mdxFile));
+    SLOT(bool addFolder(const QString& addPath, bool isTopFolder));
+
+    // シリアライズしたプレイリストを取得
+    SLOT(QByteArray getPlaylist());
+}
+
+

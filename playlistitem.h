@@ -13,8 +13,8 @@ public:
 	explicit PlaylistItem(QObject *parent = 0);
 	PlaylistItem(QString title, QString fileName);
 
-	QString title();
-	QString fileName();
+	QString title() const;
+	QString fileName() const;
 signals:
 	void titleChanged();
 	void fileNameChanged();

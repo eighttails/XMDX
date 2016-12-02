@@ -84,7 +84,7 @@ Package AndroidService{
     ..PROPERTY..
     + int currentIndex;
     ..SIGNALS..
-    + void playlistChanged(QString playlist)
+    + void playlistChanged(QByteArray playlist)
     ..SLOTS..
     + void clearPlaylist();
     + bool loadPlaylist(const QString& playlistName);
@@ -164,7 +164,7 @@ package AndroidActivity{
     + bool addFile(const QString& mdxFile);
     + bool addFolder(const QString& addPath, bool isTopFolder = true);
     ..PROTECTED SLOTS..
-    void setPlaylist(QString playlist);
+    # bool setPlaylist(QByteArray playlist);
   }
 
   class RootContext<<QML>>

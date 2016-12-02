@@ -7,7 +7,7 @@ class QMDXPlayerReplica;
 class QMDXPlayerClientProxy : public QMDXPlayer
 {
 public:
-	QMDXPlayerClientProxy(QObject *parent = 0);
+	QMDXPlayerClientProxy(PlaylistManager *playlistManager = 0, QObject *parent = 0);
 
 public slots:
 	// 曲をロードする。
@@ -24,6 +24,13 @@ public slots:
 
 	// 曲中のシーク(引数は曲頭からの秒数)
 	virtual bool setCurrentPosition(float position) override;
+
+	// 曲送り、曲戻し
+	virtual bool stepForward();
+	virtual bool stepBackward();
+
+	// インデックスを指定
+	virtual bool playFileByIndex(int index);
 
 public:
 	virtual float currentPosition() override;

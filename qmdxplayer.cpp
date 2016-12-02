@@ -52,17 +52,18 @@ public:
 
 void onMXDRVSegFault(int param)
 {
+	Q_UNUSED(param)
 	throw MXDRVException();
 }
 
 
 QMDXPlayer::QMDXPlayer(PlaylistManager *playlistManager, QObject *parent)
 	: QObject(parent)
-	, playlistManager_(playlistManager)
 	, isSongLoaded_(false)
 	, duration_(0.0)
 	, maxSongDuration_(20*60 - POST_GAP)
 	, wavIndex_(0)
+	, playlistManager_(playlistManager)
 {
 	//実行時に出る警告の抑止
 	qRegisterMetaType<QAudio::State>();
@@ -109,6 +110,7 @@ bool QMDXPlayer::loadSong(bool renderWav,
 						  unsigned loops,
 						  bool enableFadeout)
 {
+	Q_UNUSED(pdxPath)
 	// レンダリングスレッドが起こっていたら先に終了しておく
 	terminateRenderingThread();
 	{
@@ -250,8 +252,8 @@ bool QMDXPlayer::playFileByIndex(int index)
 	int loops = settings.value("numOfLoops").toInt();
 	bool isRandomEnabled = settings.value("isRandomEnabled").toBool();
 	bool isLoopEnabled = settings.value("isLoopEnabled").toBool();
-	QString nextFile = playlistManager_->setCurrentIndex(index);
-
+	playlistManager_->setCurrentIndex(index);
+	const QString nextFile = playlistManager_->currentPlaylistItem()->fileName();
 	if(nextFile.isEmpty()) return false;
 	return loadSong(true, nextFile, nullptr, loops, true);
 }

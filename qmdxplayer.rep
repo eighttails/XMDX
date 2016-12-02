@@ -24,4 +24,6 @@ class QMDXPlayer
     SLOT(bool stepForward());
     SLOT(bool stepBackward());
 
+    // インデックスを指定
+    SLOT(bool playFileByIndex(int index));
 }
