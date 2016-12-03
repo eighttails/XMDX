@@ -12,15 +12,15 @@ QMDXPlayerClientProxy::QMDXPlayerClientProxy(PlaylistManager *playlistManager, Q
 	Q_ASSERT(res);
 
 	// 通信用のレプリカとGUI用のプロキシをつなぐ
-	connect(replica_.data(), &QMDXPlayerReplica::isPlayingChanged, this, &QMDXPlayerClientProxy::setIsPlaying);
-	connect(replica_.data(), &QMDXPlayerReplica::isSongLoadedChanged, this, &QMDXPlayerClientProxy::setIsSongLoaded);
-	connect(replica_.data(), &QMDXPlayerReplica::titleChanged, this, &QMDXPlayerClientProxy::setTitle);
-	connect(replica_.data(), &QMDXPlayerReplica::fileNameChanged, this, &QMDXPlayerClientProxy::setFileName);
-	connect(replica_.data(), &QMDXPlayerReplica::durationChanged, this, &QMDXPlayerClientProxy::setDuration);
-	connect(replica_.data(), &QMDXPlayerReplica::durationStringChanged, this, &QMDXPlayerClientProxy::durationStringChanged);
-	connect(replica_.data(), &QMDXPlayerReplica::currentPositionChanged, this, &QMDXPlayerClientProxy::setCurrentPositionInternal);
-	connect(replica_.data(), &QMDXPlayerReplica::currentPositionStringChanged, this, &QMDXPlayerClientProxy::setCurrentPositionString);
-	connect(replica_.data(), &QMDXPlayerReplica::songPlayFinished, this, &QMDXPlayerClientProxy::songPlayFinished);
+	connect(replica_.data(), &QMDXPlayerReplica::isPlayingChanged, this, &QMDXPlayerClientProxy::setIsPlaying, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::isSongLoadedChanged, this, &QMDXPlayerClientProxy::setIsSongLoaded, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::titleChanged, this, &QMDXPlayerClientProxy::setTitle, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::fileNameChanged, this, &QMDXPlayerClientProxy::setFileName, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::durationChanged, this, &QMDXPlayerClientProxy::setDuration, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::durationStringChanged, this, &QMDXPlayerClientProxy::durationStringChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::currentPositionChanged, this, &QMDXPlayerClientProxy::setCurrentPositionInternal, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::currentPositionStringChanged, this, &QMDXPlayerClientProxy::setCurrentPositionString, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::songPlayFinished, this, &QMDXPlayerClientProxy::songPlayFinished, Qt::QueuedConnection);
 }
 
 bool QMDXPlayerClientProxy::loadSong(bool renderWav, const QString &fileName, const QString &pdxPath, unsigned loops, bool enableFadeout)
@@ -30,38 +30,52 @@ bool QMDXPlayerClientProxy::loadSong(bool renderWav, const QString &fileName, co
 		return QMDXPlayer::loadSong(renderWav, fileName, pdxPath, loops, enableFadeout);
 	} else {
 		//レンダリングを行う場合はサービスに依頼する
-		return replica_->loadSong(renderWav, fileName, pdxPath, loops, enableFadeout).returnValue();
+		auto result = replica_->loadSong(renderWav, fileName, pdxPath, loops, enableFadeout);
+		result.waitForFinished();
+		return result.returnValue();
 	}
 }
 
 bool QMDXPlayerClientProxy::startPlay()
 {
-	return replica_->startPlay().returnValue();
+	auto result = replica_->startPlay();
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 bool QMDXPlayerClientProxy::stopPlay()
 {
-	return replica_->stopPlay().returnValue();
+	auto result = replica_->stopPlay();
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 bool QMDXPlayerClientProxy::setCurrentPosition(float position)
 {
-	return replica_->setCurrentPosition(position).returnValue();
+	auto result = replica_->setCurrentPosition(position);
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 bool QMDXPlayerClientProxy::stepForward()
 {
-	return replica_->stepForward().returnValue();
+	auto result = replica_->stepForward();
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 bool QMDXPlayerClientProxy::stepBackward()
 {
-	return replica_->stepBackward().returnValue();
+	auto result = replica_->stepBackward();
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 bool QMDXPlayerClientProxy::playFileByIndex(int index)
 {
-	return replica_->playFileByIndex(index).returnValue();
+	auto result = replica_->playFileByIndex(index);
+	result.waitForFinished();
+	return result.returnValue();
 }
 
 float QMDXPlayerClientProxy::currentPosition()
