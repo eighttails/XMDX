@@ -136,14 +136,6 @@ package AndroidActivity{
     + bool stepBackward();
     + bool playFileByIndex(int index);
 
-    ..PROTECTED SLOTS..
-  	# void setTitle(QString title);
-  	# void setFileName(QString fileName);
-  	# void setDuration(float duration);
-  	# void setCurrentPositionInternal(float currentPosition);
-  	# void setCurrentPositionString(QString currentPositionString);
-  	# void setIsPlaying(bool isPlaying);
-  	# void setIsSongLoaded(bool isSongLoaded);
   }
   note as ClientProxyNote
   GUIからプレーヤーへの要求を
