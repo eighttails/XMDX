@@ -95,8 +95,7 @@ QMDXPlayer::QMDXPlayer(PlaylistManager *playlistManager, QObject *parent)
 	connect(this, &QMDXPlayer::isSongLoadedChanged, [this]{emit durationChanged(duration_);});
 	connect(this, &QMDXPlayer::durationChanged, [this]{emit durationStringChanged(durationString());});
 	connect(this, &QMDXPlayer::currentPositionChanged, [this]{emit currentPositionStringChanged(currentPositionString());});
-	// 曲の再生が終了したら次の曲を再生
-	connect(this, &QMDXPlayer::songPlayFinished, this, &QMDXPlayer::stepForward);
+
 }
 
 QMDXPlayer::~QMDXPlayer()

@@ -18,16 +18,21 @@
 
 void initService()
 {
+	// Androidようのサービスを生成
 	PlayerService* service = new PlayerService(qApp);
+
+	// プレイリストを生成
 	PlaylistManager* playlistManager = new PlaylistManager(nullptr, service);
 	PlaylistManagerServiceProxy* playlistManagerProxy = new PlaylistManagerServiceProxy(playlistManager, service);
-
 	// デフォルトのプレイリストをロード
 	playlistManager->loadDefaultPlaylist();
 
+	// プレーヤー本体を生成
 	QMDXPlayer* player = new QMDXPlayer(playlistManager, service);
 	QMDXPlayerServiceProxy* playerProxy = new QMDXPlayerServiceProxy(player, service);
 	service->setMdxPlayer(player);
+	// 曲の再生が終了したら次の曲を再生
+	QObject::connect(player, &QMDXPlayer::songPlayFinished, player, &QMDXPlayer::stepForward);
 
 	// プレーヤー側のタイトルが変わったら通知を出す
 	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);
@@ -38,15 +43,19 @@ void initService()
 	playerNode->enableRemoting(playerProxy);
 	QRemoteObjectHost* playlistManagerNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:playlistManager")), qApp);
 	playlistManagerNode->enableRemoting(playlistManagerProxy);
-
 }
 #endif
 
 QMDXPlayer* createMDXPlayer(PlaylistManager* playlistManager, QObject* parent){
 #ifdef Q_OS_ANDROID
 	return new QMDXPlayerClientProxy(playlistManager, parent);
+	// 曲の再生が終了したら次の曲を再生する処理はサービス側で行うため、ここでは
+	// 他プラットフォームで行っている下記のconnectは実施しない。
 #else
-	return new QMDXPlayer(playlistManager, parent);
+	QMDXPlayer* player = new QMDXPlayer(playlistManager, parent);
+	// 曲の再生が終了したら次の曲を再生
+	QObject::connect(player, &QMDXPlayer::songPlayFinished, player, &QMDXPlayer::stepForward);
+	return player;
 #endif
 }
 
