@@ -27,6 +27,7 @@ void initService()
 
 	QMDXPlayer* player = new QMDXPlayer(playlistManager, service);
 	QMDXPlayerServiceProxy* playerProxy = new QMDXPlayerServiceProxy(player, service);
+	service->setMdxPlayer(player);
 
 	// プレーヤー側のタイトルが変わったら通知を出す
 	QObject::connect(player, &QMDXPlayer::titleChanged, service, &PlayerService::setNotification);

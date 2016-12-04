@@ -10,12 +10,6 @@ PlaylistViewDelegateForm {
     itemDelegate1 {
         onClicked: {
             mdxPlayer.playFileByIndex(index);
-        }
-    }
-
-    onIsCurrentItemChanged: {
-        if(isCurrentItem){
-            mdxPlayer.loadSong(true, fileName, "", 2, true);
             mdxPlayer.startPlay();
         }
     }

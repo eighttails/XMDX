@@ -53,6 +53,8 @@
 
 #include <QObject>
 
+class QMDXPlayer;
+
 class PlayerService : public QObject
 {
 	Q_OBJECT
@@ -60,6 +62,7 @@ class PlayerService : public QObject
 public:
 	explicit PlayerService(QObject *parent = 0);
 
+	void setMdxPlayer(QMDXPlayer* mdxPlayer);
 	QString notification() const;
 
 signals:
@@ -71,9 +74,12 @@ public slots:
 
 private slots:
 	void updateAndroidNotification();
+	void onIdle();
 
 private:
+	QMDXPlayer* mdxPlayer_;
 	QString m_notification;
+	int idleCount_;
 };
 
 #endif // PlayerService_H

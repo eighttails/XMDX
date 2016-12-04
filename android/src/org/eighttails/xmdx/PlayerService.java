@@ -66,7 +66,7 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
         m_instance = this;
     }
 
-    @Override
+@Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
         return START_REDELIVER_INTENT;
@@ -74,6 +74,10 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
 
     public static void startPlayerService(Context ctx) {
         ctx.startService(new Intent(ctx, PlayerService.class));
+    }
+
+    public static void stopPlayerService() {
+        m_instance.stopForeground(true);
     }
 
     public static void notify(String s)

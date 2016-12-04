@@ -82,6 +82,7 @@ protected:
 	// ランダム再生用の
 	std::vector<int> randomPlaylist_;
 	int randomPlayIndex_;
+	void resetCurrentIndex();
 };
 
 #endif // HELPER_H

@@ -34,6 +34,7 @@ void PlaylistManager::clearPlaylist()
 	// クリアした状態をデフォルトとして反映
 	saveDefaultPlaylist();
 	notifyPlaylistUpdated();
+	resetCurrentIndex();
 }
 
 bool PlaylistManager::loadPlaylist(const QString& playlistName)
@@ -73,6 +74,7 @@ bool PlaylistManager::addFile(const QString& mdxFile)
 	saveDefaultPlaylist();
 	makeRandomPlaylist();
 	notifyPlaylistUpdated();
+	resetCurrentIndex();
 	return true;
 }
 
@@ -108,6 +110,7 @@ bool PlaylistManager::addFolder(const QString& addPath, bool isTopFolder)
 		saveDefaultPlaylist();
 		makeRandomPlaylist();
 		notifyPlaylistUpdated();
+		resetCurrentIndex();
 	}
 	return true;
 }
@@ -281,6 +284,7 @@ bool PlaylistManager::readPlaylist(QDataStream &stream)
 	}
 	makeRandomPlaylist();
 	notifyPlaylistUpdated();
+	resetCurrentIndex();
 	return true;
 }
 
@@ -304,6 +308,19 @@ void PlaylistManager::makeRandomPlaylist()
 	std::shuffle(randomPlaylist_.begin(), randomPlaylist_.end(), std::random_device());
 }
 
+void PlaylistManager::resetCurrentIndex()
+{
+	if(playlist_.isEmpty()){
+		//　プレイリストが空の場合はINDEX_INVALIDに設定
+		setCurrentIndex(INDEX_INVALID);
+	} else if(playlist_.size() <= currentIndex_){
+		// インデックスがプレイリストの範囲外になった場合はプレイリストの先頭に設定
+		setCurrentIndex(0);
+	} else {
+		// 上記に該当しない場合は何もしない
+	}
+}
+
 void PlaylistManager::notifyPlaylistUpdated()
 {
 	if(rootContext_){
@@ -311,9 +328,5 @@ void PlaylistManager::notifyPlaylistUpdated()
 	}
 	emit playlistChanged(getPlaylist());
 
-	if(playlist_.isEmpty()){
-		setCurrentIndex(INDEX_INVALID);
-	} else {
-		setCurrentIndex(0);
-	}
+	resetCurrentIndex();
 }
