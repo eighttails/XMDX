@@ -26,4 +26,21 @@ class QMDXPlayer
 
     // インデックスを指定
     SLOT(bool playFileByIndex(int index));
+
+    // 曲名を取得
+    SLOT(QString title());
+    // ファイル名を取得
+    SLOT(QString fileName());
+    // 曲長(秒)を取得
+    SLOT(float duration());
+    // 曲長(秒)をmm:ssフォーマットで取得
+    SLOT(QString durationString());
+    // 演奏中の位置(秒)を取得
+    SLOT(float currentPosition());
+    // 演奏中の位置(秒)をmm:ssフォーマットで取得
+    SLOT(QString currentPositionString());
+    // 演奏中かどうか取得
+    SLOT(bool isPlaying());
+    // 曲がロードされているかどうか取得
+    SLOT(bool isSongLoaded());
 }

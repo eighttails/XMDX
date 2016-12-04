@@ -19,8 +19,21 @@ public slots:
 	virtual bool stepForward() override;
 	virtual bool stepBackward() override;
 	virtual bool playFileByIndex(int index) override;
+
+	virtual QString title() override;
+	virtual QString fileName() override;
+	virtual float duration() override;
+	virtual QString durationString() override;
+	virtual float currentPosition() override;
+	virtual QString currentPositionString() override;
+	virtual bool isPlaying() override;
+	virtual bool isSongLoaded() override;
+
 protected:
 	QPointer<QMDXPlayer> player_;
+
+	// QMDXPlayerSource interface
+
 };
 
 #endif // QMDXPLAYERSERVICEPROXY_H

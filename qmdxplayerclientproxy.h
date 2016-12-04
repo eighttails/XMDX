@@ -33,34 +33,26 @@ public slots:
 	virtual bool playFileByIndex(int index);
 
 public:
+	// 曲名を取得
+	virtual QString title() override;
+	// ファイル名を取得
+	virtual QString fileName() override;
+	// 曲長(秒)を取得
+	virtual float duration() override;
+	// 曲長(秒)をmm:ssフォーマットで取得
+	virtual QString durationString() override;
+	// 演奏中の位置(秒)を取得
 	virtual float currentPosition() override;
 	// 演奏中の位置(秒)をmm:ssフォーマットで取得
 	virtual QString currentPositionString() override;
 	// 演奏中かどうか取得
 	virtual bool isPlaying() override;
-
-protected slots:
-	// 曲名を設定
-	virtual void setTitle(QString title);
-	// ファイル名を設定
-	virtual void setFileName(QString fileName);
-	// 曲長(秒)を設定
-	virtual void setDuration(float duration);
-	// 演奏中の位置(秒)を設定(内部用)
-	virtual void setCurrentPositionInternal(float currentPosition);
-	// 演奏中の位置(秒)をmm:ssフォーマットで設定
-	virtual void setCurrentPositionString(QString currentPositionString);
-	// 演奏中かどうか設定
-	virtual void setIsPlaying(bool isPlaying);
-	// 曲がロードされているかどうか設定
-	virtual void setIsSongLoaded(bool isSongLoaded);
+	// 曲がロードされているかどうか取得
+	virtual bool isSongLoaded() override;
 
 protected:
 	QSharedPointer<QMDXPlayerReplica> replica_;
 
-	float currentPosition_;
-	QString currentPositionString_;
-	bool isPlaying_;
 };
 
 #endif // QMDXPLAYERCLIENTPROXY_H

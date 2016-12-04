@@ -3,7 +3,6 @@
 
 QMDXPlayerClientProxy::QMDXPlayerClientProxy(PlaylistManager *playlistManager, QObject* parent)
 	: QMDXPlayer(playlistManager, parent)
-	, currentPosition_(0)
 {
 	QRemoteObjectNode* repNode = new QRemoteObjectNode(this);
 	repNode->connectToNode(QUrl(QStringLiteral("local:player")));
@@ -12,14 +11,14 @@ QMDXPlayerClientProxy::QMDXPlayerClientProxy(PlaylistManager *playlistManager, Q
 	Q_ASSERT(res);
 
 	// 通信用のレプリカとGUI用のプロキシをつなぐ
-	connect(replica_.data(), &QMDXPlayerReplica::isPlayingChanged, this, &QMDXPlayerClientProxy::setIsPlaying, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::isSongLoadedChanged, this, &QMDXPlayerClientProxy::setIsSongLoaded, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::titleChanged, this, &QMDXPlayerClientProxy::setTitle, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::fileNameChanged, this, &QMDXPlayerClientProxy::setFileName, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::durationChanged, this, &QMDXPlayerClientProxy::setDuration, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::isPlayingChanged, this, &QMDXPlayerClientProxy::isPlayingChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::isSongLoadedChanged, this, &QMDXPlayerClientProxy::isSongLoadedChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::titleChanged, this, &QMDXPlayerClientProxy::titleChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::fileNameChanged, this, &QMDXPlayerClientProxy::fileNameChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::durationChanged, this, &QMDXPlayerClientProxy::durationChanged, Qt::QueuedConnection);
 	connect(replica_.data(), &QMDXPlayerReplica::durationStringChanged, this, &QMDXPlayerClientProxy::durationStringChanged, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::currentPositionChanged, this, &QMDXPlayerClientProxy::setCurrentPositionInternal, Qt::QueuedConnection);
-	connect(replica_.data(), &QMDXPlayerReplica::currentPositionStringChanged, this, &QMDXPlayerClientProxy::setCurrentPositionString, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::currentPositionChanged, this, &QMDXPlayerClientProxy::currentPositionChanged, Qt::QueuedConnection);
+	connect(replica_.data(), &QMDXPlayerReplica::currentPositionStringChanged, this, &QMDXPlayerClientProxy::currentPositionStringChanged, Qt::QueuedConnection);
 	connect(replica_.data(), &QMDXPlayerReplica::songPlayFinished, this, &QMDXPlayerClientProxy::songPlayFinished, Qt::QueuedConnection);
 }
 
@@ -78,61 +77,57 @@ bool QMDXPlayerClientProxy::playFileByIndex(int index)
 	return result.returnValue();
 }
 
+QString QMDXPlayerClientProxy::title()
+{
+	auto result = replica_->title();
+	result.waitForFinished();
+	return result.returnValue();
+}
+
+QString QMDXPlayerClientProxy::fileName()
+{
+	auto result = replica_->fileName();
+	result.waitForFinished();
+	return result.returnValue();
+}
+
+float QMDXPlayerClientProxy::duration()
+{
+	auto result = replica_->duration();
+	result.waitForFinished();
+	return result.returnValue();
+}
+
+QString QMDXPlayerClientProxy::durationString()
+{
+	auto result = replica_->durationString();
+	result.waitForFinished();
+	return result.returnValue();
+}
+
 float QMDXPlayerClientProxy::currentPosition()
 {
-	return currentPosition_;
-}
+	auto result = replica_->currentPosition();
+	result.waitForFinished();
+	return result.returnValue();}
 
 QString QMDXPlayerClientProxy::currentPositionString()
 {
-	return currentPositionString_;
-}
+	auto result = replica_->currentPositionString();
+	result.waitForFinished();
+	return result.returnValue();}
 
 bool QMDXPlayerClientProxy::isPlaying()
 {
-	return isPlaying_;
+	auto result = replica_->isPlaying();
+	result.waitForFinished();
+	return result.returnValue();
 }
 
-void QMDXPlayerClientProxy::setTitle(QString title)
+bool QMDXPlayerClientProxy::isSongLoaded()
 {
-	title_ = title;
-	emit titleChanged(title);
-}
-
-void QMDXPlayerClientProxy::setFileName(QString fileName)
-{
-	fileName_ = fileName;
-	emit fileNameChanged(fileName);
-}
-
-void QMDXPlayerClientProxy::setDuration(float duration)
-{
-	duration_ = duration;
-	emit durationChanged(duration);
-	emit durationStringChanged(durationString());
-}
-
-void QMDXPlayerClientProxy::setCurrentPositionInternal(float currentPosition)
-{
-	currentPosition_ = currentPosition;
-	emit currentPositionChanged(currentPosition);
-}
-
-void QMDXPlayerClientProxy::setCurrentPositionString(QString currentPositionString)
-{
-	currentPositionString_ = currentPositionString;
-	emit currentPositionStringChanged(currentPositionString);
-}
-
-void QMDXPlayerClientProxy::setIsPlaying(bool isPlaying)
-{
-	isPlaying_ = isPlaying;
-	emit isPlayingChanged(isPlaying);
-}
-
-void QMDXPlayerClientProxy::setIsSongLoaded(bool isSongLoaded)
-{
-	isSongLoaded_ = isSongLoaded;
-	emit isSongLoadedChanged(isSongLoaded);
+	auto result = replica_->isSongLoaded();
+	result.waitForFinished();
+	return result.returnValue();
 }
 

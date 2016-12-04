@@ -52,3 +52,44 @@ bool QMDXPlayerServiceProxy::playFileByIndex(int index)
 {
 	return player_->playFileByIndex(index);
 }
+
+
+QString QMDXPlayerServiceProxy::title()
+{
+	return player_->title();
+}
+
+QString QMDXPlayerServiceProxy::fileName()
+{
+	return player_->fileName();
+}
+
+float QMDXPlayerServiceProxy::duration()
+{
+	return player_->duration();
+}
+
+QString QMDXPlayerServiceProxy::durationString()
+{
+	return player_->durationString();
+}
+
+float QMDXPlayerServiceProxy::currentPosition()
+{
+	return player_->currentPosition();
+}
+
+QString QMDXPlayerServiceProxy::currentPositionString()
+{
+	return player_->currentPositionString();
+}
+
+bool QMDXPlayerServiceProxy::isPlaying()
+{
+	return player_->isPlaying();
+}
+
+bool QMDXPlayerServiceProxy::isSongLoaded()
+{
+	return player_->isSongLoaded();
+}
