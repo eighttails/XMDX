@@ -18,7 +18,7 @@
 
 void initService()
 {
-	// Androidようのサービスを生成
+	// Android用のサービスを生成
 	PlayerService* service = new PlayerService(qApp);
 
 	// プレイリストを生成
@@ -44,6 +44,24 @@ void initService()
 	QRemoteObjectHost* playlistManagerNode = new QRemoteObjectHost(QUrl(QStringLiteral("local:playlistManager")), qApp);
 	playlistManagerNode->enableRemoting(playlistManagerProxy);
 }
+
+class XMDXApplication : public QApplication
+{
+public:
+	XMDXApplication(int &argc, char **argv) : QApplication(argc, argv){};
+public slots:
+	void startService(Qt::ApplicationState state = Qt::ApplicationActive){
+		// サービスを開始
+		if(state == Qt::ApplicationActive){
+			QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/PlayerService",
+													  "startPlayerService",
+													  "(Landroid/content/Context;)V",
+													  QtAndroid::androidActivity().object());
+		}
+	}
+};
+#else
+typedef QApplication XMDXApplication;
 #endif
 
 QMDXPlayer* createMDXPlayer(PlaylistManager* playlistManager, QObject* parent){
@@ -102,18 +120,16 @@ int main(int argc, char *argv[])
 	QApplication::setOrganizationName("eighttails");
 
 	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-	QApplication app(argc, argv);
+	XMDXApplication app(argc, argv);
 
 #ifdef Q_OS_ANDROID
 	if(argc >= 2 && QString(argv[1]) == "-service"){
 		initService();
 	} else {
-		// サービスを開始
-		QAndroidJniObject::callStaticMethod<void>("org/eighttails/xmdx/PlayerService",
-												  "startPlayerService",
-												  "(Landroid/content/Context;)V",
-												  QtAndroid::androidActivity().object());
+		app.startService();
 		initGUI();
+		// アクティビティが全面に来たらサービスを起動する
+		QObject::connect(&app, &XMDXApplication::applicationStateChanged, &app, &XMDXApplication::startService);
 	}
 #else
 	initGUI();
