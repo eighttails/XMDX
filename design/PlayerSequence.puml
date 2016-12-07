@@ -136,5 +136,6 @@ deactivate QMLGUI
 deactivate QMLGUI
 
 ==曲切り替え==
-
+User->QMLGUI:曲をタップ
+QMLGUI->QMDXPlayerClientProxy:playFileByIndex()
 @enduml
