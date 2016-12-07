@@ -11,7 +11,6 @@ PlayerForm {
         SequentialAnimation on leftPadding {
             id: marqueeScroll
             property int scrollTo: Math.min(0, displayTitle.width - displayTitle.contentWidth)
-            running: mdxPlayer.title != ""
             loops: Animation.Infinite;
             PauseAnimation { duration: 1000 }
             PropertyAnimation {
@@ -26,6 +25,17 @@ PlayerForm {
                 duration: Math.abs(marqueeScroll.scrollTo) * 20
             }
         }
+        onTextChanged:{
+            // 曲のタイトルが変わったらアニメーションを再定義する。(移動距離が変わるため)
+            marqueeScroll.running = false;
+            marqueeScroll.running = true;
+        }
+        onWidthChanged:{
+            // 画面の向きが変わったらアニメーションを再定義する。(移動距離が変わるため)
+            marqueeScroll.running = false;
+            marqueeScroll.running = true;
+        }
+
     }
 
     displayFileName.text: mdxPlayer.fileName;
