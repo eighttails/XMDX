@@ -54,6 +54,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.app.PendingIntent;
 
 public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
 {
@@ -69,11 +70,25 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
+        if (m_notificationManager == null) {
+            m_notificationManager = (NotificationManager)m_instance.getSystemService(Context.NOTIFICATION_SERVICE);
+            m_builder = new Notification.Builder(m_instance);
+            m_builder.setSmallIcon(R.drawable.icon);
+            m_builder.setContentTitle("XMDX");
+
+            // 通知をタップしたらアクティビティを起動
+            Intent appIntent = new Intent(getApplicationContext(), org.qtproject.qt5.android.bindings.QtActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, appIntent, 0);
+
+            m_builder.setContentIntent(pendingIntent);
+            m_instance.startForeground(1, m_builder.build());
+        }
         return START_REDELIVER_INTENT;
     }
 
     public static void startPlayerService(Context ctx) {
-        ctx.startService(new Intent(ctx, PlayerService.class));
+        Intent intent = new Intent(ctx, PlayerService.class);
+        ctx.startService(intent);
     }
 
     public static void stopPlayerService() {
@@ -82,14 +97,7 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
 
     public static void notify(String s)
     {
-        if (m_notificationManager == null) {
-            m_notificationManager = (NotificationManager)m_instance.getSystemService(Context.NOTIFICATION_SERVICE);
-            m_builder = new Notification.Builder(m_instance);
-            m_builder.setSmallIcon(R.drawable.icon);
-            m_builder.setContentTitle("XMDX");
-        }
-
         m_builder.setContentText(s);
-        m_instance.startForeground(1, m_builder.build());
+        m_notificationManager.notify(1, m_builder.build());
     }
 }

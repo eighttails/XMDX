@@ -128,7 +128,7 @@ int main(int argc, char *argv[])
 	} else {
 		app.startService();
 		initGUI();
-		// アクティビティが全面に来たらサービスを起動する
+		// アクティビティが前面に来たらサービスを起動する
 		QObject::connect(&app, &XMDXApplication::applicationStateChanged, &app, &XMDXApplication::startService);
 	}
 #else
