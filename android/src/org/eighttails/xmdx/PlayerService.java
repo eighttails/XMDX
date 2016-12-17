@@ -72,18 +72,19 @@ public class PlayerService extends org.qtproject.qt5.android.bindings.QtService
     {
         if (m_notificationManager == null) {
             m_notificationManager = (NotificationManager)m_instance.getSystemService(Context.NOTIFICATION_SERVICE);
-            m_builder = new Notification.Builder(m_instance);
-            m_builder.setSmallIcon(R.drawable.icon);
-            m_builder.setContentTitle("XMDX");
 
             // 通知をタップしたらアクティビティを起動
             Intent appIntent = new Intent(getApplicationContext(), org.qtproject.qt5.android.bindings.QtActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, appIntent, 0);
 
-            m_builder.setContentIntent(pendingIntent);
+            m_builder = new Notification.Builder(m_instance)
+            .setSmallIcon(R.drawable.icon)
+            .setContentTitle("XMDX")
+            .setContentIntent(pendingIntent);
+
             m_instance.startForeground(1, m_builder.build());
         }
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
     }
 
     public static void startPlayerService(Context ctx) {
