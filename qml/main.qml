@@ -98,6 +98,7 @@ ApplicationWindow {
                     }
                 }
             }
+            /*
             MenuItem{
                 id: menuLoadPlaylist
                 text: "プレイリストを読み込み..."
@@ -110,6 +111,7 @@ ApplicationWindow {
                 id: menuSettings
                 text: "設定..."
             }
+            */
         }
     }
 }
