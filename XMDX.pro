@@ -87,7 +87,10 @@ DISTFILES += \
     design/PlayerSequence.png \
     design/ClassDiagram.puml \
     design/PlayerSequence.puml \
-    README.md
+    README.md \
+    doc/Screenshot1.png \
+    doc/Screenshot2.png \
+    doc/markdown.css
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
