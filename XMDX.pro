@@ -90,7 +90,8 @@ DISTFILES += \
     README.md \
     doc/Screenshot1.png \
     doc/Screenshot2.png \
-    doc/markdown.css
+    doc/markdown.css \
+    README.html
 
 HEADERS += \
     mdx2wav/gamdx/downsample/downsample.h \
