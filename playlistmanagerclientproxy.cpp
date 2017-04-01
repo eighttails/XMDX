@@ -69,7 +69,7 @@ bool PlaylistManagerClientProxy::addFolder(const QString &addPath, bool isTopFol
 
 void PlaylistManagerClientProxy::setCurrentIndex(int index)
 {
-	return replica_->setCurrentIndex(index);
+	return replica_->pushCurrentIndex(index);
 }
 
 bool PlaylistManagerClientProxy::setPlaylist(QByteArray playlist)
