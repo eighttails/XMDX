@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QIcon>
-
+#include <QtWidgets>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QQuickStyle>
@@ -119,7 +119,11 @@ int main(int argc, char *argv[])
 	QApplication::setOrganizationDomain("eighttails.org");
 	QApplication::setOrganizationName("eighttails");
 
-	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#ifdef Q_OS_ANDROID
+	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
+	QApplication::setStyle(QStyleFactory::create("Fusion"));
+#endif
+
 	XMDXApplication app(argc, argv);
 
 #ifdef Q_OS_ANDROID
