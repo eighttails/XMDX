@@ -4,9 +4,16 @@
 #include <QDataStream>
 #include <QFileDialog>
 #include <QGuiApplication>
+#include <QMessageBox>
+#include <QIcon>
 
 #include <algorithm>
 #include <random>
+
+#ifdef ANDROID
+#include <QtAndroid>
+#include <permission/permissions.h>
+#endif
 
 #include "playlistmanager.h"
 #include "playlistitem.h"
@@ -80,6 +87,9 @@ bool PlaylistManager::addFile(const QString& mdxFile)
 
 bool PlaylistManager::addFolder(const QString& addPath, bool isTopFolder)
 {
+	// ストレージアクセス許可を要求
+	requestStoragePermission();
+
 	QDir addFolderPath(QDir::toNativeSeparators(addPath));
 	if(!addFolderPath.exists()){
 		return false;
@@ -117,6 +127,9 @@ bool PlaylistManager::addFolder(const QString& addPath, bool isTopFolder)
 
 QString PlaylistManager::addFileDialog()
 {
+	// ストレージアクセス許可を要求
+	requestStoragePermission();
+
 	// GTKスタイル使用時にファイル選択ダイアログがフリーズする対策
 	QFileDialog::Options opt = 0;
 	if (QGuiApplication::platformName() == QLatin1String("xcb")){
@@ -127,6 +140,8 @@ QString PlaylistManager::addFileDialog()
 	dialog.setOptions(opt);
 	dialog.setFileMode(QFileDialog::ExistingFile);
 	dialog.setNameFilter("MDX files (*.MDX *.mdx)");
+	// Androidでは/storage以下を表示する(こうしないと何故かSDカードが表示されない) QTBUG-62619
+	dialog.setDirectory(QGuiApplication::platformName() == QLatin1String("android") ? "/storage" : QDir::homePath());
 #ifdef ALWAYSFULLSCREEN
 	dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
 #endif
@@ -148,6 +163,8 @@ QString PlaylistManager::addFolderDialog()
 	QFileDialog dialog;
 	dialog.setFileMode(QFileDialog::DirectoryOnly);
 	dialog.setOptions(opt);
+	// Androidでは/storage以下を表示する(こうしないと何故かSDカードが表示されない) QTBUG-62619
+	dialog.setDirectory(QGuiApplication::platformName() == QLatin1String("android") ? "/storage" : QDir::homePath());
 #ifdef ALWAYSFULLSCREEN
 	dialog.setWindowState(dialog.windowState() | Qt::WindowMaximized);
 #endif
@@ -329,4 +346,19 @@ void PlaylistManager::notifyPlaylistUpdated()
 	emit playlistChanged(getPlaylist());
 
 	resetCurrentIndex();
+}
+
+bool PlaylistManager::requestStoragePermission()
+{
+#ifdef ANDROID
+	// SDカードへのアクセス許可を要求
+	QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+	if(r == QtAndroid::PermissionResult::Denied) {
+		QtAndroid::requestPermissionsSync( QStringList() << "android.permission.WRITE_EXTERNAL_STORAGE" );
+		r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+		if(r == QtAndroid::PermissionResult::Denied) {
+			QMessageBox::critical(nullptr, "XMDX", "外部ストレージにアクセスできませんでした。");
+		}
+	}
+#endif
 }

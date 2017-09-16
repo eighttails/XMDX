@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QIcon>
+#include <QFont>
 #include <QtWidgets>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
@@ -119,14 +120,17 @@ int main(int argc, char *argv[])
 	QApplication::setOrganizationDomain("eighttails.org");
 	QApplication::setOrganizationName("eighttails");
 
-#ifdef Q_OS_ANDROID
-	QCoreApplication::setAttribute(Qt::AA_DisableHighDpiScaling);
-	QApplication::setStyle(QStyleFactory::create("Fusion"));
-#endif
+	QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 
 	XMDXApplication app(argc, argv);
 
 #ifdef Q_OS_ANDROID
+	QApplication::setStyle(QStyleFactory::create("Fusion"));
+	QFont font = QFont("MotoyaLMaru");
+	if(font.exactMatch()){
+		app.setFont(font);
+	}
+
 	if(argc >= 2 && QString(argv[1]) == "-service"){
 		initService();
 	} else {

@@ -76,6 +76,9 @@ protected:
 	QQmlContext* rootContext_;
 	QList<QObject*> playlist_;
 
+	// Android用のストレージアクセス許可要求
+	bool requestStoragePermission();
+
 	// 現在再生中の曲を示すインデックス。曲がない場合は-1を示す
 	int currentIndex_;
 

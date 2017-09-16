@@ -3,7 +3,7 @@ QT += qml quick quickcontrols2 widgets multimedia svg
 CONFIG += c++11
 
 android:{
-QT+= androidextras remoteobjects
+QT+= androidextras remoteobjects core_private
 
 REPC_REPLICA += qmdxplayer.rep
 REPC_REPLICA += playlistmanager.rep
@@ -44,7 +44,8 @@ SOURCES += main.cpp \
     mdx2wav/gamdx/mame/ym2151.c \
     qmdxplayer.cpp \
     playlistitem.cpp \
-    playlistmanager.cpp
+    playlistmanager.cpp \
+    permission/permissions.cpp
 
 RESOURCES += qml.qrc
 
@@ -114,4 +115,5 @@ HEADERS += \
     mdx2wav/gamdx/types.h \
     qmdxplayer.h \
     playlistitem.h \
-    playlistmanager.h
+    playlistmanager.h \
+    permission/permissions.h
