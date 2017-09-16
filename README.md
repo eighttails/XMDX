@@ -93,19 +93,18 @@ mdx2wav(<http://cygx.mydns.jp/blog/?arti=516>)はmitsuman様、
 gamdx(<http://gorry.haun.org/android/gamdx/>)はGORRY様のプロダクトです。
 
 ### ビルド方法
-Qt5.7が必要です。[こちら](https://www.qt.io/download/) からダウンロードしてください。  
-本アプリではQt Quick Controls2.0を使用しており、またQtLabsのSettingsモジュールを使っている関係上、現時点でQt5.7専用になります。これよりバージョンが新しかったり古かったりするとビルドが通らない可能性があります。  
+Qt5.9が必要です。[こちら](https://www.qt.io/download/) からダウンロードしてください。  
+本アプリではQt Quick Controls2.0を使用しており、またQtLabsのqtremoteobjectsモジュールを使っている関係上、現時点でQt5.9専用になります。これよりバージョンが新しかったり古かったりするとビルドが通らない可能性があります。  
 
-また、Androidをターゲットとする場合、QtRemoteObjectsが別途必要になります。  
-プロセス間通信を行うスタブ(QtRemoteObjectsではReplica,Sourceとよんでいます)を生成するためのrepcというツールのビルドとインストールが必要です。
-
-    git clone https://code.qt.io/cgit/playground/qtremoteobjects.git  
-    cd qtremoteobjects.git  
-    $(Android用Qtのパス)/bin/qmake  
-    make && make install  
 上記の準備ができたらQtCreatorでビルドできます。
 
 ## 更新履歴
+■V1.0α2 2017/9/16  
+
+* Androidで外部ストレージにアクセスできない問題への対応
+* 一部の環境で文字化けが起きる問題への対応
+
+
 ■V1.0α 2016/12/18  
 
 * 初回リリース

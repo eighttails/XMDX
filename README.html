@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="generator" content="ReText 6.0.2">
+<meta name="generator" content="ReText 7.0.1">
 <title>README</title>
 </head>
 <body>
@@ -126,17 +126,15 @@ HootとかZ-MUSICとかありますが、対応しない理由は2つで、ま�
 mdx2wav(<a href="http://cygx.mydns.jp/blog/?arti=516">http://cygx.mydns.jp/blog/?arti=516</a>)はmitsuman様、
 gamdx(<a href="http://gorry.haun.org/android/gamdx/">http://gorry.haun.org/android/gamdx/</a>)はGORRY様のプロダクトです。</p>
 <h3 id="_13">ビルド方法</h3>
-<p>Qt5.7が必要です。<a href="https://www.qt.io/download/">こちら</a> からダウンロードしてください。<br>
-本アプリではQt Quick Controls2.0を使用しており、またQtLabsのSettingsモジュールを使っている関係上、現時点でQt5.7専用になります。これよりバージョンが新しかったり古かったりするとビルドが通らない可能性があります。  </p>
-<p>また、Androidをターゲットとする場合、QtRemoteObjectsが別途必要になります。<br>
-プロセス間通信を行うスタブ(QtRemoteObjectsではReplica,Sourceとよんでいます)を生成するためのrepcというツールのビルドとインストールが必要です。</p>
-<pre><code>git clone https://code.qt.io/cgit/playground/qtremoteobjects.git  
-cd qtremoteobjects.git  
-$(Android用Qtのパス)/bin/qmake  
-make &amp;&amp; make install
-</code></pre>
+<p>Qt5.9が必要です。<a href="https://www.qt.io/download/">こちら</a> からダウンロードしてください。<br>
+本アプリではQt Quick Controls2.0を使用しており、またQtLabsのqtremoteobjectsモジュールを使っている関係上、現時点でQt5.9専用になります。これよりバージョンが新しかったり古かったりするとビルドが通らない可能性があります。  </p>
 <p>上記の準備ができたらQtCreatorでビルドできます。</p>
 <h2 id="_14">更新履歴</h2>
+<p>■V1.0α2 2017/9/16  </p>
+<ul>
+<li>Androidで外部ストレージにアクセスできない問題への対応</li>
+<li>一部の環境で文字化けが起きる問題への対応</li>
+</ul>
 <p>■V1.0α 2016/12/18  </p>
 <ul>
 <li>初回リリース</li>
